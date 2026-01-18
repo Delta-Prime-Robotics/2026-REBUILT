@@ -131,7 +131,7 @@ public class RobotContainer {
     controller
         .a()
         .whileTrue(
-            DriveCommands.joystickDriveWithAngleAtPoint(
+            DriveCommands.joystickDriveWithAimingAtPoint(
                 drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),

@@ -156,7 +156,7 @@ public class DriveCommands {
    * Field relative drive command using joystick for linear control and PID for angular control. The
    * robot will orient towards a target pose provided by the supplier.
    */
-  public static Command joystickDriveWithAngleAtPoint(
+  public static Command joystickDriveWithAimingAtPoint(
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
@@ -224,13 +224,8 @@ public class DriveCommands {
                     Pose2d robotPose = drive.getPose();
                     Translation2d delta = target.getTranslation().minus(robotPose.getTranslation());
                     double angle = Math.atan2(delta.getY(), delta.getX());
-                    boolean isFlipped =
-                        DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
-
-                    if (isFlipped) {
-                      angle += Math.PI;
-                    }
+                    //To flip angle 180 degrees
+                    // angle += Math.PI;
                     return new Rotation2d(angle);
                   });
             });
