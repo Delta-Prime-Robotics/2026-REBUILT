@@ -30,5 +30,19 @@ public final class Constants {
     REPLAY
   }
 
+  public static final boolean kDriveTypeisNeo = true; // true for NEO, false for Vortex
+
+  public static final class MotorConstants {
+    // Kv Values
+    public static final int kVortexKv = 565;
+    // Free Speeds
+    public static final int kNeoFreeSpeedRpm = 5676;
+    public static final int kVortexFreeSpeedRpm = 6784;
+    // Smart Current Limits
+    public static final int kNeo550SetCurrent = 20; // amps
+    public static final int kNeoSetCurrent = 50; // amps
+    public static final int kVortexSetCurrent = 50; // amps
+  }
+
   public static final double fieldCenterY = Units.inchesToMeters(158.32); // Inches
 }
