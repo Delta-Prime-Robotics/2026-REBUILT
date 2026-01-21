@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -29,9 +28,9 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
-
-  public static final boolean kDriveTypeisNeo = true; // true for NEO, false for Vortex
-
+  //Poseitioning Constants
+  // public static final double fieldCenterY = Units.inchesToMeters(158.32); // Inches
+  
   public static final class MotorConstants {
     // Kv Values
     public static final int kVortexKv = 565;
@@ -39,10 +38,25 @@ public final class Constants {
     public static final int kNeoFreeSpeedRpm = 5676;
     public static final int kVortexFreeSpeedRpm = 6784;
     // Smart Current Limits
-    public static final int kNeo550SetCurrent = 20; // amps
-    public static final int kNeoSetCurrent = 50; // amps
-    public static final int kVortexSetCurrent = 50; // amps
+    public static final int kNeo550SmartCurrentLimit = 30; // amps
+    public static final int kNeoSmartCurrentLimit = 50; // amps
+    public static final int kVortexSmartCurrentLimit = 50; // amps
   }
 
-  public static final double fieldCenterY = Units.inchesToMeters(158.32); // Inches
+  public static final class CanIdsOtherThanDrive {
+    //0 is reserved for RoboRIO
+    //1 isnt reserved, but is commonly used devices that cant change their ID
+    //Ids 2-9 are reserved for drive motors
+
+    // Intake
+    public static final int kIntakeId = 10;
+
+    // Shooter
+    public static final int kShooterLeaderId = 11;
+    public static final int kShooterFollowerId = 12;
+   
+    // Indexer
+    public static final int kIndexerId = 13;
+  }
+  
 }
