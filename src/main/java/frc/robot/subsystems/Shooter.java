@@ -19,6 +19,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanIdsOtherThanDrive;
 import frc.robot.Constants.MotorConstants;
@@ -144,6 +145,15 @@ public class Shooter extends SubsystemBase {
     return this.runOnce(()-> setShooterSetpoint(rpm))
     .finallyDo(()-> stopShooter()); 
   }
+
+  private double getShooterRPMForDistanceMeters(double distanceMeters) {
+			return 0; //TO-Do: put a fancy formula or lookup table here
+	}
+
+	public Command autoShootRange(double targetDistanceMeters) {
+    double targetRPM = getShooterRPMForDistanceMeters(targetDistanceMeters);
+		return this.runEnd(() -> setShooterSetpoint(targetRPM), () -> stopShooter());
+	}
 
 
   @Override
