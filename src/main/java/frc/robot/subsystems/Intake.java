@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -24,6 +26,13 @@ public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   public Intake() {
     m_intake = new SparkMax(CanIdsOtherThanDrive.kIntakeId, SparkMax.MotorType.kBrushless);
+
+    m_intake.configure(m_intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
+
+  private void setIntakeSpeed(double speed){
+    m_intake.set(speed);
+
   }
 
   @Override
