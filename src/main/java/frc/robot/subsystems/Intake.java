@@ -12,15 +12,26 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanIdsOtherThanDrive;
 import frc.robot.Constants.MotorConstants;
+  
+
+//We want it take the fuel from the floor into the robot. We might use a laser break sensor and we will need sparkmax motor controllers. And put encoder on the controllers.
+
 
 public class Intake extends SubsystemBase {
   private final SparkMax m_intake; //NEO 550
+ 
+  private final SparkMax m_arm; // NEO
 
   private static SparkMaxConfig m_intakeConfig = new SparkMaxConfig();
-
+  
+  private static SparkMaxConfig m_armConfig = new SparkMaxConfig();
+ 
   static {
     m_intakeConfig.idleMode(IdleMode.kBrake);
-    m_intakeConfig.smartCurrentLimit(MotorConstants.kNeo550SmartCurrentLimit);
+    m_intakeConfig.smartCurrentLimit(MotorConstants.kNeo550SmartCurrentLimit); 
+   
+    m_armConfig.idleMode(IdleMode.kBrake);
+    m_armConfig.smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit);
   }
 
   /** Creates a new Intake. */
@@ -28,12 +39,28 @@ public class Intake extends SubsystemBase {
     m_intake = new SparkMax(CanIdsOtherThanDrive.kIntakeId, SparkMax.MotorType.kBrushless);
 
     m_intake.configure(m_intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+   
+    m_arm = new SparkMax(CanIdsOtherThanDrive.kArmId, SparkMax.MotorType.kBrushless);
+   
+    m_arm.configure(m_armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    
+    
+
   }
 
   private void setIntakeSpeed(double speed){
     m_intake.set(speed);
 
   }
+   
+  private void setArmSpeed(double speed){ 
+    m_arm.set(speed);
+  
+  }
+    // add speed 
+
+
+
 
   @Override
   public void periodic() {
