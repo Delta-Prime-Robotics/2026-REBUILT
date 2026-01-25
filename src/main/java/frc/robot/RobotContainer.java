@@ -107,6 +107,11 @@ public class RobotContainer {
                 drive::addVisionMeasurement, new VisionIO() {}
                 // , new VisionIO() {}
                 );
+=======
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}
+		// , new VisionIO() {}
+		);
+>>>>>>> 0a94ad90c1600013872294495c907ba3b076a041
         break;
     }
 
