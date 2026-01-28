@@ -28,8 +28,10 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
   private final VisionIO[] io;
-  private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+  private final VisionIOInputsAutoLogged[] inputs; // this will error as if the class does not exist.
+  // this is a issue but deploying twice fixs it. This is because the class is generated at compile time.
+  //build\classes\java\main\frc\robot\subsystems\vision\VisionIOInputsAutoLogged.class
 
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
