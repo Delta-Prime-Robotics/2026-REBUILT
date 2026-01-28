@@ -231,6 +231,25 @@ public class DriveCommands {
             });
   }
 
+  public static Command aimAtHubWhileDriving(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    Supplier<Pose2d> hubPose =
+        () -> {
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
+          return isFlipped
+              // Red Hub center field coords
+              ? new Pose2d(
+                  Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Rotation2d.kZero)
+              // Blue Hub center field coords
+              : new Pose2d(
+                  Units.inchesToMeters(181.56), Units.inchesToMeters(158.32), Rotation2d.kZero);
+        };
+
+    return joystickDriveWithAimingAtPoint(drive, xSupplier, ySupplier, hubPose);
+  }
+
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *
