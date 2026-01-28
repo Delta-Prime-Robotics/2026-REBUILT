@@ -28,9 +28,9 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
-  //Poseitioning Constants
+  // Poseitioning Constants
   // public static final double fieldCenterY = Units.inchesToMeters(158.32); // Inches
-  
+
   public static final class MotorConstants {
     // Kv Values
     public static final int kVortexKv = 565;
@@ -44,9 +44,9 @@ public final class Constants {
   }
 
   public static final class CanIdsOtherThanDrive {
-    //0 is reserved for RoboRIO
-    //1 isnt reserved, but is commonly used devices that cant change their ID
-    //Ids 2-9 are reserved for drive motors
+    // 0 is reserved for RoboRIO
+    // 1 isnt reserved, but is commonly used devices that cant change their ID
+    // Ids 2-9 are reserved for drive motors
 
     // Intake
     public static final int kIntakeId = 10;
@@ -54,9 +54,8 @@ public final class Constants {
     // Shooter
     public static final int kShooterLeaderId = 11;
     public static final int kShooterFollowerId = 12;
-   
+
     // Indexer
     public static final int kIndexerId = 13;
   }
-  
 }
