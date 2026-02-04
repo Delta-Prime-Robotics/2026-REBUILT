@@ -4,21 +4,37 @@
 
 package frc.robot.subsystems.shooter;
 
-import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CanIdsOtherThanDrive;
+import org.littletonrobotics.junction.Logger;
 
 public class Indexer extends SubsystemBase {
+  private final IndexerIO io;
+  private final IndexerIOInputsAutoLogged inputs = new IndexerIOInputsAutoLogged();
 
-  private final SparkMax m_indexer; //NEO Motor
+  public Indexer(IndexerIO io) {
+    this.io = io;
+  }
 
-  /** Creates a new Indexer. */
-  public Indexer() {
-    m_indexer = new SparkMax(CanIdsOtherThanDrive.kIndexerId, SparkMax.MotorType.kBrushless);
+  public void setIndexerMotor(double speed) {
+    double clampedSpeed = MathUtil.clamp(speed, -1.0, 1.0);
+    io.setMotor(clampedSpeed);
+    Logger.recordOutput("Shooter/Indexer/RequestedSpeed", clampedSpeed);
+  }
+
+  public void stopIndexer() {
+    io.stop();
+    Logger.recordOutput("Shooter/Indexer/RequestedSpeed", 0.0);
+  }
+
+  public Command runIndexerCommand(double speed) {
+    return this.runEnd(() -> setIndexerMotor(speed), this::stopIndexer);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter/Indexer", inputs);
   }
 }

@@ -4,156 +4,156 @@
 
 package frc.robot.subsystems.shooter;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CanIdsOtherThanDrive;
 import frc.robot.Constants.MotorConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelShooter extends SubsystemBase {
-  private final SparkMax m_shooterLeader; // NEO
-  private final SparkMax m_shooterFollower; // NEO
-  private final RelativeEncoder m_Encoder; // Primary Encoder Leader
-  private final SparkClosedLoopController m_ClosedLoopController;
-
-  private static SparkMaxConfig m_leaderConfig = new SparkMaxConfig();
-  private static SparkMaxConfig m_followerConfig = new SparkMaxConfig();
-
-  private static final double kShooterMaxRPM = 5676.0; // NEO free speed RPM
-  private static final double kShooterAllowableErrorRPM = 50.0; // RPM //To-Do: tune this value
-
-  // static configuration block
-  static {
-    // configure Shooter Leader
-    m_leaderConfig
-        .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
-        .idleMode(IdleMode.kCoast);
-
-    // configure Spark Closed Loop Feedforward and PID... To-do: tune these values
-    m_leaderConfig
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(0.0, 0.0, 0.0)
-        .allowedClosedLoopError(kShooterAllowableErrorRPM, ClosedLoopSlot.kSlot0)
-        .maxMotion
-        .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
-
-    m_leaderConfig.closedLoop.feedForward.sva(
-        0.0, // ks(volts)
-        0.0, // kv(volts per motor rpm)
-        0.0 // ka(volts per motor rpm squared)
-        );
-
-    // configure Shooter Follower
-    m_followerConfig.apply(m_leaderConfig).follow(CanIdsOtherThanDrive.kShooterLeaderId, false);
+  public enum ShooterState {
+    DISABLED,
+    STOPPED,
+    IDLE,
+    SHOOTING
   }
+
+  private static final double kIdleSetpointRPM = 1000.0; // TODO: tune
+  private static final double kDefaultShootingSetpointRpm = 4000.0; // TODO: tune
+
+  private final FlywheelShooterIO io;
+  private final FlywheelShooterIOInputsAutoLogged inputs =
+      new FlywheelShooterIOInputsAutoLogged();
+
+  private final Command disabledDefaultCommand;
+  private final Command stoppedDefaultCommand;
+  private final Command idleDefaultCommand;
+  private final Command shootingDefaultCommand;
+
+  private ShooterState state = ShooterState.DISABLED;
+  private double shootingSetpointRpm = kDefaultShootingSetpointRpm;
 
   /** Creates a new Shooter. */
-  public FlywheelShooter() {
-    m_shooterLeader =
-        new SparkMax(CanIdsOtherThanDrive.kShooterLeaderId, SparkMax.MotorType.kBrushless);
-    m_shooterFollower =
-        new SparkMax(CanIdsOtherThanDrive.kShooterFollowerId, SparkMax.MotorType.kBrushless);
+  public FlywheelShooter(FlywheelShooterIO io) {
+    this.io = io;
 
-    m_Encoder = m_shooterLeader.getEncoder(); // or getAlternateEncoder()
-    m_Encoder.setPosition(0);
+    disabledDefaultCommand = this.run(this::stopShooter);
+    stoppedDefaultCommand = this.run(this::stopShooter);
+    idleDefaultCommand = this.run(() -> setShooterSetpoint(kIdleSetpointRPM));
+    shootingDefaultCommand = this.run(() -> setShooterSetpoint(shootingSetpointRpm));
 
-    // To-Do: make sure this async doesnt cause issues
-    m_shooterLeader.configureAsync(
-        m_leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_shooterFollower.configureAsync(
-        m_followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    // Might not need this but it would be intresting to mess with this
-    // Could we get faster response times with less retries and timeouts?
-    // and could we up the number of retries while using the PID controller?
-    m_shooterLeader.setCANMaxRetries(5);
-    m_shooterFollower.setCANMaxRetries(5);
-    m_shooterLeader.setCANTimeout(10);
-    m_shooterFollower.setCANTimeout(10);
-
-    m_ClosedLoopController = m_shooterLeader.getClosedLoopController();
+    setState(ShooterState.DISABLED);
   }
-  
+
   /**
-   * Gets the current shooter wheel velocity in RPM
+   * Gets the current shooter wheel velocity in RPM.
    *
-   * @return The current shooter wheel velocity in RPM
+   * @return The current shooter wheel velocity in RPM.
    */
   public double getShooterVelocity() {
-    Logger.recordOutput("Shooter/Velocity RPM", m_Encoder.getVelocity());
-    return m_Encoder.getVelocity();
+    return inputs.velocityRpm;
+  }
+
+  public ShooterState getState() {
+    return state;
+  }
+
+  public void setState(ShooterState newState) {
+    state = newState;
+    switch (newState) {
+      case DISABLED:
+        setDefaultCommand(disabledDefaultCommand);
+        break;
+      case STOPPED:
+        setDefaultCommand(stoppedDefaultCommand);
+        break;
+      case IDLE:
+        setDefaultCommand(idleDefaultCommand);
+        break;
+      case SHOOTING:
+        setDefaultCommand(shootingDefaultCommand);
+        break;
+      default:
+        setDefaultCommand(disabledDefaultCommand);
+        break;
+    }
+    Logger.recordOutput("Shooter/State", newState.toString());
+  }
+
+  public Command setStateCommand(ShooterState newState) {
+    return this.runOnce(() -> setState(newState));
+  }
+
+  public void setShootingSetpointRpm(double setpointRpm) {
+    shootingSetpointRpm = setpointRpm;
   }
 
   private void setShooterSetpoint(double setpointRPM) {
-    if (setpointRPM > kShooterMaxRPM) {
-      setpointRPM = kShooterMaxRPM;
+    double clampedSetpoint =
+        MathUtil.clamp(setpointRPM, 0.0, MotorConstants.kNeoFreeSpeedRpm);
+    if (clampedSetpoint != setpointRPM) {
       System.out.println(
-          "WARNING: Shooter setpoint RPM exceeds maximum. Capping to " + kShooterMaxRPM + " RPM.");
+          "WARNING: Shooter setpoint RPM exceeds maximum. Capping to "
+              + MotorConstants.kNeoFreeSpeedRpm
+              + " RPM.");
     }
-    m_ClosedLoopController.setSetpoint(setpointRPM, ControlType.kVelocity);
-    Logger.recordOutput("Shooter/Setpoint RPM", setpointRPM);
+    io.setVelocityRpm(clampedSetpoint);
+    Logger.recordOutput("Shooter/Setpoint RPM", clampedSetpoint);
   }
 
   private void stopShooter() {
-    m_ClosedLoopController.setSetpoint(0.0, ControlType.kVelocity);
+    io.stop();
     Logger.recordOutput("Shooter/Setpoint RPM", 0.0);
   }
 
-  /**
-   * Immediately stops the shooter motors
-   *
-   * @waring This method should only be used in emergency situations
-   */
+  /** Immediately stops the shooter motors (use only in emergency situations). */
   public void hardStopShooter() {
-    m_shooterLeader.stopMotor();
-    m_shooterFollower.stopMotor();
+    io.stop();
     Logger.recordOutput("Shooter/Setpoint RPM", 0.0);
   }
 
-  /** Winds up the shooter to an average setpoint RPM */
+  /** Winds up the shooter to an average setpoint RPM. */
   public Command windUpShooterCommand() {
-    // Maybe start runing shooter at low speed when on allince side of the field
-    // to decrease spinup time when trying to shoot
-    final double shooterAvgSetpointRPM = 4000.0; // Example average shooter setpoint
-    return this.runOnce(() -> setShooterSetpoint(shooterAvgSetpointRPM))
-        .handleInterrupt(() -> stopShooter()); // This should only run if the command is interrupted
+    setShootingSetpointRpm(kDefaultShootingSetpointRpm);
+    return this.runOnce(() -> setState(ShooterState.SHOOTING))
+        .handleInterrupt(() -> setState(ShooterState.STOPPED));
   }
 
   public Command stopShooterCommand() {
-    return this.runOnce(() -> stopShooter());
+    return this.runOnce(() -> setState(ShooterState.STOPPED));
   }
 
   /**
-   * Shoots at a specific RPM
+   * Shoots at a specific RPM.
    *
-   * @param rpm The target RPM to shoot at
+   * @param rpm The target RPM to shoot at.
    */
   public Command shootAtRPMSCommand(double rpm) {
-    return this.runOnce(() -> setShooterSetpoint(rpm)).finallyDo(() -> stopShooter());
+    return this.runOnce(
+            () -> {
+              setShootingSetpointRpm(rpm);
+              setState(ShooterState.SHOOTING);
+            })
+        .finallyDo(() -> setState(ShooterState.STOPPED));
   }
 
   private double getShooterRPMForDistanceMeters(double distanceMeters) {
-    return 0; // TO-Do: put a fancy formula or lookup table here
+    return 0; // TODO: put a fancy formula or lookup table here
   }
 
   public Command autoShootRange(double targetDistanceMeters) {
     double targetRPM = getShooterRPMForDistanceMeters(targetDistanceMeters);
-    return this.runEnd(() -> setShooterSetpoint(targetRPM), () -> stopShooter());
+    return this.runOnce(
+            () -> {
+              setShootingSetpointRpm(targetRPM);
+              setState(ShooterState.SHOOTING);
+            })
+        .finallyDo(() -> setState(ShooterState.STOPPED));
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    io.updateInputs(inputs);
+    Logger.processInputs("Shooter/Flywheel", inputs);
   }
 }
