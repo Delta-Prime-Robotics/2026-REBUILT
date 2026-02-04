@@ -10,9 +10,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -67,6 +64,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+ 
         break;
 
       default:
@@ -84,21 +82,10 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    setAutoCommands();
+
+    // uncomment to set drive characterization commands on auto chooser
+    // setDriveCharacterizationCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -133,26 +120,11 @@ public class RobotContainer {
     controller
         .a()
         .whileTrue(
-            DriveCommands.joystickDriveWithAimingAtPoint(
+            DriveCommands.aimAtHubWhileDriving(
                 drive,
                 () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> {
-                  boolean isFlipped =
-                      DriverStation.getAlliance().isPresent()
-                          && DriverStation.getAlliance().get() == Alliance.Red;
-                  return isFlipped
-                      // Red Hub center field coords
-                      ? new Pose2d(
-                          Units.inchesToMeters(468.56),
-                          Units.inchesToMeters(158.32),
-                          Rotation2d.kZero)
-                      // Blue Hub center field coords
-                      : new Pose2d(
-                          Units.inchesToMeters(181.56),
-                          Units.inchesToMeters(158.32),
-                          Rotation2d.kZero);
-                })); // to-do, maybe create constant for these field coords
+                () ->
+                    -controller.getLeftX())); // to-do, maybe create constant for these field coords
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
 
@@ -169,6 +141,28 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+  }
+
+  public void setAutoCommands() {
+    autoChooser.addDefaultOption("Do Nothing", Commands.none());
+  }
+
+  public void setDriveCharacterizationCommands() {
+    // Set up SysId routines
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   /**

@@ -1,0 +1,139 @@
+{
+  "hubs": [
+    {
+      "x": 230,
+      "y": 44,
+      "width": 1114,
+      "height": 663,
+      "state": {
+        "sidebar": {
+          "width": 330,
+          "expanded": [
+            "/RealOutputs/PhotonAlerts/errors",
+            "/RealOutputs/PhotonAlerts/infos",
+            "/RealOutputs/Vision",
+            "/RealOutputs/Vision/Summary",
+            "/Drive",
+            "/Drive/Gyro"
+          ]
+        },
+        "tabs": {
+          "selected": 2,
+          "tabs": [
+            {
+              "type": 0,
+              "title": "",
+              "controller": null,
+              "controllerUUID": "grimvlgu9aluj8btvwotco2wpj0pto2h",
+              "renderer": "#/",
+              "controlsHeight": 0
+            },
+            {
+              "type": 9,
+              "title": "Drive Overview",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/Measured",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "states",
+                    "logKey": "/RealOutputs/SwerveStates/SetpointsOptimized",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff",
+                      "arrangement": "0,1,2,3"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/SwerveChassisSpeeds/Measured",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "chassisSpeeds",
+                    "logKey": "/RealOutputs/SwerveChassisSpeeds/Setpoints",
+                    "logType": "ChassisSpeeds",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff"
+                    }
+                  },
+                  {
+                    "type": "rotation",
+                    "logKey": "/RealOutputs/Odometry/Robot/rotation",
+                    "logType": "Rotation2d",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "maxSpeed": 5,
+                "sizeX": 0.65,
+                "sizeY": 0.65,
+                "orientation": 1
+              },
+              "controllerUUID": "prdx7t2eedan6n46dxrjfu7eisf16f9o",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 2,
+              "title": "2D Field",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "/RealOutputs/Odometry/Robot",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "bumpers": ""
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesRejected",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/Summary/RobotPosesAccepted",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff8c00"
+                    }
+                  }
+                ],
+                "field": "FRC:2026 Field",
+                "orientation": 0,
+                "size": "medium"
+              },
+              "controllerUUID": "yk8np9x734hubxmzew85oz1t9lw7up47",
+              "renderer": null,
+              "controlsHeight": 200
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "satellites": [],
+  "version": "26.0.0"
+}
