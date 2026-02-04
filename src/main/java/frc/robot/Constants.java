@@ -57,5 +57,12 @@ public final class Constants {
 
     // Indexer
     public static final int kIndexerId = 13;
+
+    // Belt Nado (belt agitator)
+    public static final int kBeltNadoLeaderId = 14;
+    public static final int kBeltNadoFollowerId = 15;
+
+    // Lemon Feeder
+    public static final int kLemonFeederId = 16;
   }
 }

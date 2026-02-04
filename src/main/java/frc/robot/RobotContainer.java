@@ -23,6 +23,22 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.shooter.BeltNado;
+import frc.robot.subsystems.shooter.BeltNadoIO;
+import frc.robot.subsystems.shooter.BeltNadoIOSim;
+import frc.robot.subsystems.shooter.BeltNadoIOSpark;
+import frc.robot.subsystems.shooter.FlywheelShooter;
+import frc.robot.subsystems.shooter.FlywheelShooterIO;
+import frc.robot.subsystems.shooter.FlywheelShooterIOSim;
+import frc.robot.subsystems.shooter.FlywheelShooterIOSpark;
+import frc.robot.subsystems.shooter.Indexer;
+import frc.robot.subsystems.shooter.IndexerIO;
+import frc.robot.subsystems.shooter.IndexerIOSim;
+import frc.robot.subsystems.shooter.IndexerIOSpark;
+import frc.robot.subsystems.shooter.LemonFeeder;
+import frc.robot.subsystems.shooter.LemonFeederIO;
+import frc.robot.subsystems.shooter.LemonFeederIOSim;
+import frc.robot.subsystems.shooter.LemonFeederIOSpark;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -34,6 +50,10 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final FlywheelShooter shooter;
+  private final BeltNado beltNado;
+  private final Indexer indexer;
+  private final LemonFeeder lemonFeeder;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(3);
@@ -53,6 +73,10 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
+        shooter = new FlywheelShooter(new FlywheelShooterIOSpark());
+        beltNado = new BeltNado(new BeltNadoIOSpark());
+        indexer = new Indexer(new IndexerIOSpark());
+        lemonFeeder = new LemonFeeder(new LemonFeederIOSpark());
         break;
 
       case SIM:
@@ -64,6 +88,10 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+        shooter = new FlywheelShooter(new FlywheelShooterIOSim());
+        beltNado = new BeltNado(new BeltNadoIOSim());
+        indexer = new Indexer(new IndexerIOSim());
+        lemonFeeder = new LemonFeeder(new LemonFeederIOSim());
  
         break;
 
@@ -76,6 +104,10 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        shooter = new FlywheelShooter(new FlywheelShooterIO() {});
+        beltNado = new BeltNado(new BeltNadoIO() {});
+        indexer = new Indexer(new IndexerIO() {});
+        lemonFeeder = new LemonFeeder(new LemonFeederIO() {});
         break;
     }
 
