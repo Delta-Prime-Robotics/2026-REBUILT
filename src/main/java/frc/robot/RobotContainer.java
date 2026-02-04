@@ -152,9 +152,9 @@ public class RobotContainer {
                           Units.inchesToMeters(181.56),
                           Units.inchesToMeters(158.32),
                           Rotation2d.kZero);
-                })); //to-do, maybe create constant for these field coords
-                //I also saw another team that was houseing these coords in a separate file
-                //that way only one boolean to flip the allience was needed for all coords
+                })); // to-do, maybe create constant for these field coords
+    // I also saw another team that was houseing these coords in a separate file
+    // that way only one boolean to flip the allience was needed for all coords
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
