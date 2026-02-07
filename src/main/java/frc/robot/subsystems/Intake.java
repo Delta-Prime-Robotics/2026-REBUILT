@@ -20,7 +20,7 @@ import frc.robot.Constants.MotorConstants;
 public class Intake extends SubsystemBase {
   private final SparkMax m_intake; //NEO 550
  
-  private final SparkMax m_arm; // NEO
+  private final SparkMax m_arm; // NEO make a pid for position that only allows the arm to go down 90?
 
   private static SparkMaxConfig m_intakeConfig = new SparkMaxConfig();
   
