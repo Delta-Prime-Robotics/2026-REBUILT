@@ -57,6 +57,8 @@ public final class Constants {
    
     // Indexer
     public static final int kIndexerId = 13;
+
+    public static final int kArmId = 14;
   }
   
 }

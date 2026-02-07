@@ -6,9 +6,15 @@ package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanIdsOtherThanDrive;
 import frc.robot.Constants.MotorConstants;
@@ -18,13 +24,15 @@ import frc.robot.Constants.MotorConstants;
 
 
 public class Intake extends SubsystemBase {
-  private final SparkMax m_intake; //NEO 550
+  private final SparkMax m_intake; // NEO 550
  
   private final SparkMax m_arm; // NEO
 
   private static SparkMaxConfig m_intakeConfig = new SparkMaxConfig();
   
   private static SparkMaxConfig m_armConfig = new SparkMaxConfig();
+
+  private final SparkClosedLoopController m_armController;
  
   static {
     m_intakeConfig.idleMode(IdleMode.kBrake);
@@ -32,6 +40,16 @@ public class Intake extends SubsystemBase {
    
     m_armConfig.idleMode(IdleMode.kBrake);
     m_armConfig.smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit);
+
+    m_armConfig.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(0.0, 0.0, 0.0)
+        .allowedClosedLoopError(0, ClosedLoopSlot.kSlot0)
+        .maxMotion
+        .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
+
+    m_armConfig.closedLoop.feedForward.svacr(0, 0, 0, 0, 0);
+
   }
 
   /** Creates a new Intake. */
@@ -44,7 +62,7 @@ public class Intake extends SubsystemBase {
    
     m_arm.configure(m_armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     
-    
+    m_armController = m_arm.getClosedLoopController();
 
   }
 
@@ -59,7 +77,10 @@ public class Intake extends SubsystemBase {
   }
     // add speed 
 
-
+  private void setArmSetpoint(double setpointDeg) {
+    setpointDeg = MathUtil.clamp(setpointDeg, 90, 0);
+    m_armController.setSetpoint(setpointDeg, ControlType.kMAXMotionPositionControl);
+  }
 
 
   @Override
