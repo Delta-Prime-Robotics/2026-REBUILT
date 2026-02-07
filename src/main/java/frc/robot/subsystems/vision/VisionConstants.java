@@ -24,9 +24,18 @@ public class VisionConstants {
 
   // Robot to camera transforms
   public static Transform3d robotToCamera0 =
-      new Transform3d(Units.inchesToMeters(12), 0, Units.inchesToMeters(15.5), new Rotation3d(0.0, -0.4, 0.0));
+      new Transform3d(
+        Units.inchesToMeters(12),
+        0,
+        Units.inchesToMeters(15.5),
+        new Rotation3d(0.0, -0.4, 0.0)); //find angle of camera 
+
   public static Transform3d robotToCamera1 =
-      new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+      new Transform3d(
+        -0.2,
+        0.0,
+        0.2,
+        new Rotation3d(0.0, -0.4, Math.PI));
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;
