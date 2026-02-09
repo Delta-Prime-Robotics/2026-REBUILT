@@ -34,9 +34,7 @@ public class AllianceShiftTracker {
 
     ShiftState shiftState = computeShiftState(matchTime, autoWinner);
     boolean isMyAllianceActive =
-        myAlliance
-            .map(alliance -> shiftState.activeAlliance.isActiveFor(alliance))
-            .orElse(false);
+        myAlliance.map(alliance -> shiftState.activeAlliance.isActiveFor(alliance)).orElse(false);
 
     Logger.recordOutput("AllianceShift/MatchTimeRemaining", matchTime);
     Logger.recordOutput("AllianceShift/AutoWinner", autoWinner.displayName);
@@ -50,8 +48,7 @@ public class AllianceShiftTracker {
 
   private static ShiftState computeShiftState(double matchTime, AutoWinner autoWinner) {
     if (matchTime <= 0) {
-      return new ShiftState(
-          "Unknown", ActiveAlliance.UNKNOWN, ActiveAlliance.UNKNOWN, 0.0);
+      return new ShiftState("Unknown", ActiveAlliance.UNKNOWN, ActiveAlliance.UNKNOWN, 0.0);
     }
 
     if (DriverStation.isAutonomousEnabled()) {
@@ -65,8 +62,7 @@ public class AllianceShiftTracker {
 
       if (teleopElapsed < TRANSITION_DURATION) {
         double secondsLeft = TRANSITION_DURATION - teleopElapsed;
-        ActiveAlliance nextActive =
-            activeAllianceForShift(1, autoWinner, ActiveAlliance.UNKNOWN);
+        ActiveAlliance nextActive = activeAllianceForShift(1, autoWinner, ActiveAlliance.UNKNOWN);
         return new ShiftState("Transition", ActiveAlliance.BOTH, nextActive, secondsLeft);
       }
 
@@ -74,8 +70,7 @@ public class AllianceShiftTracker {
       double shiftsTotal = SHIFT_DURATION * SHIFT_COUNT;
       if (shiftElapsed < shiftsTotal) {
         int shiftIndex = (int) (shiftElapsed / SHIFT_DURATION) + 1;
-        double secondsLeft =
-            SHIFT_DURATION - (shiftElapsed - ((shiftIndex - 1) * SHIFT_DURATION));
+        double secondsLeft = SHIFT_DURATION - (shiftElapsed - ((shiftIndex - 1) * SHIFT_DURATION));
         ActiveAlliance active =
             activeAllianceForShift(shiftIndex, autoWinner, ActiveAlliance.UNKNOWN);
         ActiveAlliance nextActive =
