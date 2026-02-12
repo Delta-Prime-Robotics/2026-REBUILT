@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -57,5 +59,16 @@ public final class Constants {
 
     // Indexer
     public static final int kIndexerId = 13;
+  }
+  public final class HookConstants {
+    public static final int kHookCanId = 18;
+
+    public static final IdleMode kHookIdleMode = IdleMode.kBrake;
+  }
+  public static final class NeoMotorConstants {
+    public static final double kFreeSpeedRpm = 5676;
+    //smart Current Limits
+    public static final int kNeo550SetCurrent = 30;
+    public static final int kNeoSetCurrent = 50;
   }
 }
