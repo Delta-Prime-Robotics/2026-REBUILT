@@ -11,32 +11,35 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CanIdsOtherThanDrive;
 import frc.robot.Constants.MotorConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelShooter extends SubsystemBase {
-  private final SparkMax m_shooterLeader; // NEO
-  private final SparkMax m_shooterFollower; // NEO
+  private final SparkFlex m_shooterLeader; // Vortex
+  // private final SparkMax m_shooterFollower; // NEO
   private final RelativeEncoder m_Encoder; // Primary Encoder Leader
   private final SparkClosedLoopController m_ClosedLoopController;
 
-  private static SparkMaxConfig m_leaderConfig = new SparkMaxConfig();
-  private static SparkMaxConfig m_followerConfig = new SparkMaxConfig();
+  private static SparkFlexConfig m_leaderConfig = new SparkFlexConfig();
+  // private static SparkMaxConfig m_followerConfig = new SparkMaxConfig();
 
-  private static final double kShooterMaxRPM = 5676.0; // NEO free speed RPM
+  private static final double kShooterMaxRPM = Constants.MotorConstants.kVortexFreeSpeedRpm; // NEO free speed RPM
   private static final double kShooterAllowableErrorRPM = 50.0; // RPM //To-Do: tune this value
 
   // static configuration block
   static {
     // configure Shooter Leader
     m_leaderConfig
-        .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
+        .smartCurrentLimit(MotorConstants.kVortexSmartCurrentLimit)
         .idleMode(IdleMode.kCoast);
 
     // configure Spark Closed Loop Feedforward and PID... To-do: tune these values
@@ -55,15 +58,15 @@ public class FlywheelShooter extends SubsystemBase {
         );
 
     // configure Shooter Follower
-    m_followerConfig.apply(m_leaderConfig).follow(CanIdsOtherThanDrive.kShooterLeaderId, false);
+    // m_followerConfig.apply(m_leaderConfig).follow(CanIdsOtherThanDrive.kShooterLeaderId, false);
   }
 
   /** Creates a new Shooter. */
   public FlywheelShooter() {
     m_shooterLeader =
-        new SparkMax(CanIdsOtherThanDrive.kShooterLeaderId, SparkMax.MotorType.kBrushless);
-    m_shooterFollower =
-        new SparkMax(CanIdsOtherThanDrive.kShooterFollowerId, SparkMax.MotorType.kBrushless);
+        new SparkFlex(CanIdsOtherThanDrive.kShooterLeaderMotorId, SparkMax.MotorType.kBrushless);
+    // m_shooterFollower =
+    //     new SparkMax(CanIdsOtherThanDrive.kShooterFollowerId, SparkMax.MotorType.kBrushless);
 
     m_Encoder = m_shooterLeader.getEncoder(); // or getAlternateEncoder()
     m_Encoder.setPosition(0);
@@ -71,16 +74,16 @@ public class FlywheelShooter extends SubsystemBase {
     // To-Do: make sure this async doesnt cause issues
     m_shooterLeader.configureAsync(
         m_leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_shooterFollower.configureAsync(
-        m_followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // m_shooterFollower.configureAsync(
+    //     m_followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     // Might not need this but it would be intresting to mess with this
     // Could we get faster response times with less retries and timeouts?
     // and could we up the number of retries while using the PID controller?
-    m_shooterLeader.setCANMaxRetries(5);
-    m_shooterFollower.setCANMaxRetries(5);
-    m_shooterLeader.setCANTimeout(10);
-    m_shooterFollower.setCANTimeout(10);
+    // m_shooterLeader.setCANMaxRetries(5);
+    // m_shooterFollower.setCANMaxRetries(5);
+    // m_shooterLeader.setCANTimeout(10);
+    // m_shooterFollower.setCANTimeout(10);
 
     m_ClosedLoopController = m_shooterLeader.getClosedLoopController();
   }
@@ -117,7 +120,7 @@ public class FlywheelShooter extends SubsystemBase {
    */
   public void hardStopShooter() {
     m_shooterLeader.stopMotor();
-    m_shooterFollower.stopMotor();
+    // m_shooterFollower.stopMotor();
     Logger.recordOutput("Shooter/Setpoint RPM", 0.0);
   }
 
