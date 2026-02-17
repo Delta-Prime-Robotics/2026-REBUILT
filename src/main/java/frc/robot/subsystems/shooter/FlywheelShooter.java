@@ -24,20 +24,12 @@ import frc.robot.Constants.MotorConstants;
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelShooter extends SubsystemBase {
-<<<<<<< HEAD
   private final SparkFlex m_shooterLeader; // Vortex
-=======
-  private final SparkMax m_shooterLeader; // NEO
->>>>>>> 2f2378d1f68c503a9fc6fb9817c7fd513c4601b3
   // private final SparkMax m_shooterFollower; // NEO
   private final RelativeEncoder m_Encoder; // Primary Encoder Leader
   private final SparkClosedLoopController m_ClosedLoopController;
 
-<<<<<<< HEAD
   private static SparkFlexConfig m_leaderConfig = new SparkFlexConfig();
-=======
-  private static SparkMaxConfig m_leaderConfig = new SparkMaxConfig();
->>>>>>> 2f2378d1f68c503a9fc6fb9817c7fd513c4601b3
   // private static SparkMaxConfig m_followerConfig = new SparkMaxConfig();
 
   private static final double kShooterMaxRPM = Constants.MotorConstants.kVortexFreeSpeedRpm; // NEO free speed RPM
@@ -72,15 +64,9 @@ public class FlywheelShooter extends SubsystemBase {
   /** Creates a new Shooter. */
   public FlywheelShooter() {
     m_shooterLeader =
-<<<<<<< HEAD
         new SparkFlex(CanIdsOtherThanDrive.kShooterLeaderMotorId, SparkMax.MotorType.kBrushless);
     // m_shooterFollower =
     //     new SparkMax(CanIdsOtherThanDrive.kShooterFollowerId, SparkMax.MotorType.kBrushless);
-=======
-        new SparkMax(CanIdsOtherThanDrive.kShooterLeaderId, SparkMax.MotorType.kBrushless);
-    /*m_shooterFollower =
-        new SparkMax(CanIdsOtherThanDrive.kShooterFollowerId, SparkMax.MotorType.kBrushless);*/
->>>>>>> 2f2378d1f68c503a9fc6fb9817c7fd513c4601b3
 
     m_Encoder = m_shooterLeader.getEncoder(); // or getAlternateEncoder()
     m_Encoder.setPosition(0);
@@ -88,26 +74,15 @@ public class FlywheelShooter extends SubsystemBase {
     // To-Do: make sure this async doesnt cause issues
     m_shooterLeader.configureAsync(
         m_leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-<<<<<<< HEAD
     // m_shooterFollower.configureAsync(
     //     m_followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-=======
-    /*m_shooterFollower.configureAsync(
-        m_followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);*/
->>>>>>> 2f2378d1f68c503a9fc6fb9817c7fd513c4601b3
 
     // Might not need this but it would be intresting to mess with this
     // Could we get faster response times with less retries and timeouts?
     // and could we up the number of retries while using the PID controller?
-<<<<<<< HEAD
     // m_shooterLeader.setCANMaxRetries(5);
     // m_shooterFollower.setCANMaxRetries(5);
     // m_shooterLeader.setCANTimeout(10);
-=======
-    m_shooterLeader.setCANMaxRetries(5);
-    // m_shooterFollower.setCANMaxRetries(5);
-    m_shooterLeader.setCANTimeout(10);
->>>>>>> 2f2378d1f68c503a9fc6fb9817c7fd513c4601b3
     // m_shooterFollower.setCANTimeout(10);
 
     m_ClosedLoopController = m_shooterLeader.getClosedLoopController();
