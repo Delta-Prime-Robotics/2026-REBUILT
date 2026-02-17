@@ -52,10 +52,14 @@ public final class Constants {
     public static final int kIntakeId = 10;
 
     // Shooter
-    public static final int kShooterLeaderId = 11;
-    public static final int kShooterFollowerId = 12;
+    public static final int kShooterLeaderMotorId = 15;
+    public static final int kShooterFollowerMotorId = 16;
 
-    // Indexer
-    public static final int kIndexerId = 13;
+    // Belt Conveyor
+    public static final int kBeltnadoMotorId = 12;
+
+    //Kicker / Indexer
+    public static final int kKickdexerTopMotorId = 13;
+    public static final int kKickdexerBottomMotorId = 14;
   }
 }
