@@ -50,16 +50,18 @@ public final class Constants {
 
     // Intake
     public static final int kIntakeId = 10;
-
-    // Shooter
-    public static final int kShooterLeaderMotorId = 15;
-    public static final int kShooterFollowerMotorId = 16;
+    public static final int kLeftArmId = 11;
+    public static final int kRightArmId = 12;
 
     // Belt Conveyor
-    public static final int kBeltnadoMotorId = 12;
+    public static final int kBeltnadoMotorId = 13;
 
     //Kicker / Indexer
-    public static final int kKickdexerTopMotorId = 13;
-    public static final int kKickdexerBottomMotorId = 14;
+    public static final int kKickdexerTopMotorId = 14;
+    public static final int kKickdexerBottomMotorId = 15;
+
+    // Shooter
+    public static final int kShooterLeaderMotorId = 16;
+    // public static final int kShooterFollowerMotorId = 16;
   }
 }
