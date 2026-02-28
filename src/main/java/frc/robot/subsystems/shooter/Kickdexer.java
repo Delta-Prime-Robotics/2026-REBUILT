@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanIdsOtherThanDrive;
@@ -22,6 +23,7 @@ public class Kickdexer extends SubsystemBase {
   private static SparkMax m_bottomMotor; //NEO
   private static RelativeEncoder m_TopEncoder;
   private static RelativeEncoder m_BottomEncoder;
+
   private static SparkClosedLoopController m_TopClosedLoopController;
   private static SparkClosedLoopController m_BottomClosedLoopController;
 
@@ -72,6 +74,15 @@ public class Kickdexer extends SubsystemBase {
     m_TopClosedLoopController = m_topMotor.getClosedLoopController();
     m_BottomClosedLoopController = m_bottomMotor.getClosedLoopController();
   }
+
+  void setSpeeds(double topMotorSpeed, double bottomMotorSpeed) {
+    m_topMotor.set(topMotorSpeed);
+    m_bottomMotor.set(bottomMotorSpeed);
+  }
+
+  /*void setSetpoints() {
+
+  }*/
 
   @Override
   public void periodic() {
