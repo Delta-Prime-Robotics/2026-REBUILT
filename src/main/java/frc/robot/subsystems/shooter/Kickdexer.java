@@ -73,6 +73,8 @@ public class Kickdexer extends SubsystemBase {
     m_BottomClosedLoopController = m_bottomMotor.getClosedLoopController();
   }
 
+  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
