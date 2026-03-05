@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-public class beltcommands {
+public class BeltCommands {
 
     public static Command runOnce(Runnable action, Subsystem... requirements) {
         return new InstantCommand(action, requirements);

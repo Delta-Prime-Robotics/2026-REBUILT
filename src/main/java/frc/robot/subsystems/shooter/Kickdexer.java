@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,6 +28,7 @@ public class Kickdexer extends SubsystemBase {
   private static SparkMax m_bottomMotor; // NEO
   private static RelativeEncoder m_topEncoder;
   private static RelativeEncoder m_bottomEncoder;
+  
   private static SparkClosedLoopController m_topClosedLoopController;
   private static SparkClosedLoopController m_bottomClosedLoopController;
 
@@ -109,6 +111,12 @@ public class Kickdexer extends SubsystemBase {
     Logger.recordOutput("Kickdexer/TopSetpointRPM", topSetpointRPM);
     Logger.recordOutput("Kickdexer/BottomSetpointRPM", bottomSetpointRPM);
   }
+  
+  
+  private void setSpeeds(double topMotorSpeed, double bottomMotorSpeed) {
+    m_topMotor.set(topMotorSpeed);
+    m_bottomMotor.set(bottomMotorSpeed);
+  }
 
   private void stopMotors() {
     m_topClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
@@ -126,11 +134,14 @@ public class Kickdexer extends SubsystemBase {
     return this.runOnce(this::stopMotors);
   }
 
-  public Command runAtVelocitySetpointsCommand(double topSetpointRPM, double bottomSetpointRPM) {
-    return this.runEnd(
-        () -> setVelocitySetpoints(topSetpointRPM, bottomSetpointRPM),
-        this::stopMotors);
+  public Command runAtSpeedCommand(double topMotorSpeed, double bottomMotorSpeed) {
+    return this.runOnce(
+        () -> setSpeeds(topMotorSpeed, bottomMotorSpeed)).finallyDo(this::stopMotors);
   }
+
+  /*void setSetpoints() {
+
+  }*/
 
   @Override
   public void periodic() {
