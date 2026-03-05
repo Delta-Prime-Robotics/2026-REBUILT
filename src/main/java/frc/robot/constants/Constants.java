@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file
 // at the root directory of this project.
 
-package frc.robot;
+package frc.robot.constants;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -56,10 +56,9 @@ public final class Constants {
     // Belt Conveyor
     public static final int kBeltnadoMotorId = 13;
 
-    //Kicker / Indexer
+    // Kicker / Indexer
     public static final int kKickdexerBottomMotorId = 14;
     public static final int kKickdexerTopMotorId = 15;
-    
 
     // Shooter
     public static final int kShooterLeaderMotorId = 16;

@@ -15,14 +15,14 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.CanIdsOtherThanDrive;
-import frc.robot.Constants.MotorConstants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.CanIdsOtherThanDrive;
+import frc.robot.constants.Constants.MotorConstants;
+
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,7 +35,8 @@ public class FlywheelShooter extends SubsystemBase {
   private static SparkFlexConfig m_leaderConfig = new SparkFlexConfig();
   // private static SparkMaxConfig m_followerConfig = new SparkMaxConfig();
 
-  private static final double kShooterMaxRPM = Constants.MotorConstants.kVortexFreeSpeedRpm; // NEO free speed RPM
+  private static final double kShooterMaxRPM =
+      Constants.MotorConstants.kVortexFreeSpeedRpm; // NEO free speed RPM
   private static final double kShooterAllowableErrorRPM = 50.0; // RPM //To-Do: tune this value
 
   // Distance in meters -> shooter RPM. Tune these points from on-field data.
@@ -105,7 +106,7 @@ public class FlywheelShooter extends SubsystemBase {
 
     m_ClosedLoopController = m_shooterLeader.getClosedLoopController();
   }
-  
+
   /**
    * Gets the current shooter wheel velocity in RPM
    *

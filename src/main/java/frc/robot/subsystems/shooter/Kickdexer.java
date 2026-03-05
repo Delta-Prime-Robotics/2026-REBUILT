@@ -14,12 +14,12 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CanIdsOtherThanDrive;
-import frc.robot.Constants.MotorConstants;
+import frc.robot.constants.Constants.CanIdsOtherThanDrive;
+import frc.robot.constants.Constants.MotorConstants;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -28,7 +28,7 @@ public class Kickdexer extends SubsystemBase {
   private static SparkMax m_bottomMotor; // NEO
   private static RelativeEncoder m_topEncoder;
   private static RelativeEncoder m_bottomEncoder;
-  
+
   private static SparkClosedLoopController m_topClosedLoopController;
   private static SparkClosedLoopController m_bottomClosedLoopController;
 
@@ -89,13 +89,14 @@ public class Kickdexer extends SubsystemBase {
     return m_bottomEncoder.getVelocity();
   }
 
+  private void setMotorSpeeds(double topMotorSpeed, double bottomMotorSpeed) {
+    topMotorSpeed = MathUtil.clamp(topMotorSpeed, -1.0, 1.0);
+    bottomMotorSpeed = MathUtil.clamp(bottomMotorSpeed, -1.0, 1.0);
+    m_topMotor.set(topMotorSpeed);
+    m_bottomMotor.set(bottomMotorSpeed);
 
-  private void setMotorSpeeds(double topSpeed, double bottomSpeed) {
-    m_topMotor.set(topSpeed);
-    m_bottomMotor.set(bottomSpeed);
-
-    Logger.recordOutput("Kickdexer/TopPercentOutput", topSpeed);
-    Logger.recordOutput("Kickdexer/BottomPercentOutput", bottomSpeed);
+    Logger.recordOutput("Kickdexer/TopPercentOutput", topMotorSpeed);
+    Logger.recordOutput("Kickdexer/BottomPercentOutput", bottomMotorSpeed);
   }
 
   public Command setMotorSpeedsCommand(double topSpeed, double bottomSpeed) {
@@ -110,12 +111,6 @@ public class Kickdexer extends SubsystemBase {
 
     Logger.recordOutput("Kickdexer/TopSetpointRPM", topSetpointRPM);
     Logger.recordOutput("Kickdexer/BottomSetpointRPM", bottomSetpointRPM);
-  }
-  
-  
-  private void setSpeeds(double topMotorSpeed, double bottomMotorSpeed) {
-    m_topMotor.set(topMotorSpeed);
-    m_bottomMotor.set(bottomMotorSpeed);
   }
 
   private void stopMotors() {
@@ -134,9 +129,9 @@ public class Kickdexer extends SubsystemBase {
     return this.runOnce(this::stopMotors);
   }
 
-  public Command runAtSpeedCommand(double topMotorSpeed, double bottomMotorSpeed) {
-    return this.runOnce(
-        () -> setSpeeds(topMotorSpeed, bottomMotorSpeed)).finallyDo(this::stopMotors);
+  public Command runAtSpeedsCommand(double topMotorSpeed, double bottomMotorSpeed) {
+    return this.runOnce(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed))
+        .finallyDo(this::stopMotors);
   }
 
   /*void setSetpoints() {
