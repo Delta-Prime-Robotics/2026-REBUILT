@@ -9,17 +9,21 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.constants.Constants;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
@@ -43,60 +47,69 @@ public class RobotContainer {
   private final Kickdexer kickdexer = new Kickdexer();
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(3);
+  private final CommandXboxController driverController = new CommandXboxController(3);
   private final CommandXboxController operatorController = new CommandXboxController(4);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIONavX(),
-                new ModuleIOSpark(0),
-                new ModuleIOSpark(1),
-                new ModuleIOSpark(2),
-                new ModuleIOSpark(3));
-        break;
-
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-
-        break;
-
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        break;
+  private static Field2d field;
+    
+      /** The container for the robot. Contains subsystems, OI devices, and commands. */
+      public RobotContainer() {
+        switch (Constants.currentMode) {
+          case REAL:
+            // Real robot, instantiate hardware IO implementations
+            drive =
+                new Drive(
+                    new GyroIONavX(),
+                    new ModuleIOSpark(0),
+                    new ModuleIOSpark(1),
+                    new ModuleIOSpark(2),
+                    new ModuleIOSpark(3));
+            break;
+    
+          case SIM:
+            // Sim robot, instantiate physics sim IO implementations
+            drive =
+                new Drive(
+                    new GyroIO() {},
+                    new ModuleIOSim(),
+                    new ModuleIOSim(),
+                    new ModuleIOSim(),
+                    new ModuleIOSim());
+    
+            break;
+    
+          default:
+            // Replayed robot, disable IO implementations
+            drive =
+                new Drive(
+                    new GyroIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {});
+            break;
+        }
+    
+        // Set up auto routines
+        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    
+        setAutoCommands();
+    
+        // uncomment to set drive characterization commands on auto chooser
+        // setDriveCharacterizationCommands();
+    
+        // Configure the button bindings
+        configureButtonBindings();
+    
+        field = new Field2d();
+        SmartDashboard.putData("Field", field);
+        FieldConstants.plotZones();
     }
-
-    // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    setAutoCommands();
-
-    // uncomment to set drive characterization commands on auto chooser
-    // setDriveCharacterizationCommands();
-
-    // Configure the button bindings
-    configureButtonBindings();
+  
+  public static Field2d getField() {
+      return field;
   }
 
   /**
@@ -110,9 +123,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
     // // Lock to 0° when A button is held
     // controller
@@ -125,22 +138,22 @@ public class RobotContainer {
     //             () -> Rotation2d.kZero));
 
     // Aim at hub when A button is held
-    controller
+    driverController
         .a()
         .whileTrue(
             DriveCommands.aimAtHubWhileDriving(
                 drive,
-                () -> -controller.getLeftY(),
+                () -> -driverController.getLeftY(),
                 () ->
-                    -controller.getLeftX())); // to-do, maybe create constant for these field coords
+                    -driverController.getLeftX())); // to-do, maybe create constant for these field coords
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    driverController
         .b()
         .onTrue(
             Commands.runOnce(
@@ -151,14 +164,12 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Operator controls
-    operatorController
-        .a()
-        .whileTrue(kickdexer.runAtVelocitySetpointsCommand(2000.0, 2600.0));
+    operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
 
     operatorController.y().whileTrue(flywheelShooter.runAtRPMCommand(4000.0));
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
-    operatorController.x().whileTrue(flywheelShooter.autoShootRange(this::getDistanceToHubMeters));
+    driverController.leftTrigger().whileTrue(flywheelShooter.autoShootRange(this::getDistanceToHubMeters));
   }
 
   private double getDistanceToHubMeters() {
