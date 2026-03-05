@@ -16,11 +16,14 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.CanIdsOtherThanDrive;
 import frc.robot.Constants.MotorConstants;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelShooter extends SubsystemBase {
@@ -35,8 +38,23 @@ public class FlywheelShooter extends SubsystemBase {
   private static final double kShooterMaxRPM = Constants.MotorConstants.kVortexFreeSpeedRpm; // NEO free speed RPM
   private static final double kShooterAllowableErrorRPM = 50.0; // RPM //To-Do: tune this value
 
+  // Distance in meters -> shooter RPM. Tune these points from on-field data.
+  private static final InterpolatingDoubleTreeMap kShooterDistanceToRpmMap =
+      new InterpolatingDoubleTreeMap();
+
+  private static final double kMinCalibratedDistanceMeters = 1.2;
+  private static final double kMaxCalibratedDistanceMeters = 6.0;
+
   // static configuration block
   static {
+    kShooterDistanceToRpmMap.put(1.2, 2600.0);
+    kShooterDistanceToRpmMap.put(1.8, 3000.0);
+    kShooterDistanceToRpmMap.put(2.4, 3400.0);
+    kShooterDistanceToRpmMap.put(3.0, 3800.0);
+    kShooterDistanceToRpmMap.put(3.6, 4200.0);
+    kShooterDistanceToRpmMap.put(4.5, 4700.0);
+    kShooterDistanceToRpmMap.put(6.0, 5300.0);
+
     // configure Shooter Leader
     m_leaderConfig
         .smartCurrentLimit(MotorConstants.kVortexSmartCurrentLimit)
@@ -151,12 +169,29 @@ public class FlywheelShooter extends SubsystemBase {
   }
 
   private double getShooterRPMForDistanceMeters(double distanceMeters) {
-    return 0; // TO-Do: put a fancy formula or lookup table here
+    double clampedDistanceMeters =
+        MathUtil.clamp(distanceMeters, kMinCalibratedDistanceMeters, kMaxCalibratedDistanceMeters);
+    double targetRpm = kShooterDistanceToRpmMap.get(clampedDistanceMeters);
+
+    Logger.recordOutput("Shooter/TargetDistanceMeters", distanceMeters);
+    Logger.recordOutput("Shooter/ClampedDistanceMeters", clampedDistanceMeters);
+    Logger.recordOutput("Shooter/TargetRPMFromDistance", targetRpm);
+
+    return targetRpm;
+  }
+
+  public Command autoShootRange(DoubleSupplier targetDistanceMetersSupplier) {
+    return this.runEnd(
+        () -> {
+          double targetDistanceMeters = targetDistanceMetersSupplier.getAsDouble();
+          double targetRPM = getShooterRPMForDistanceMeters(targetDistanceMeters);
+          setShooterSetpoint(targetRPM);
+        },
+        this::stopShooter);
   }
 
   public Command autoShootRange(double targetDistanceMeters) {
-    double targetRPM = getShooterRPMForDistanceMeters(targetDistanceMeters);
-    return this.runEnd(() -> setShooterSetpoint(targetRPM), () -> stopShooter());
+    return autoShootRange(() -> targetDistanceMeters);
   }
 
   @Override

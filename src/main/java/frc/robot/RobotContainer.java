@@ -9,7 +9,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -153,6 +156,20 @@ public class RobotContainer {
         .whileTrue(kickdexer.runAtVelocitySetpointsCommand(2000.0, 2600.0));
 
     operatorController.y().whileTrue(flywheelShooter.runAtRPMCommand(4000.0));
+
+    // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
+    operatorController.x().whileTrue(flywheelShooter.autoShootRange(this::getDistanceToHubMeters));
+  }
+
+  private double getDistanceToHubMeters() {
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
+    Translation2d hubTranslation =
+        isFlipped
+            ? new Translation2d(Units.inchesToMeters(468.56), Units.inchesToMeters(158.32))
+            : new Translation2d(Units.inchesToMeters(181.56), Units.inchesToMeters(158.32));
+    return drive.getPose().getTranslation().getDistance(hubTranslation);
   }
 
   public void setAutoCommands() {
