@@ -146,6 +146,10 @@ public class FlywheelShooter extends SubsystemBase {
     return this.runOnce(() -> setShooterSetpoint(rpm)).finallyDo(() -> stopShooter());
   }
 
+  public Command runAtRPMCommand(double rpm) {
+    return this.runEnd(() -> setShooterSetpoint(rpm), this::stopShooter);
+  }
+
   private double getShooterRPMForDistanceMeters(double distanceMeters) {
     return 0; // TO-Do: put a fancy formula or lookup table here
   }

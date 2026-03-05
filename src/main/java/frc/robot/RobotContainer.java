@@ -23,6 +23,8 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.shooter.FlywheelShooter;
+import frc.robot.subsystems.shooter.Kickdexer;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -34,9 +36,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final FlywheelShooter flywheelShooter = new FlywheelShooter();
+  private final Kickdexer kickdexer = new Kickdexer();
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(3);
+  private final CommandXboxController operatorController = new CommandXboxController(4);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -141,6 +146,13 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    // Operator controls
+    operatorController
+        .a()
+        .whileTrue(kickdexer.runAtVelocitySetpointsCommand(2000.0, 2600.0));
+
+    operatorController.y().whileTrue(flywheelShooter.runAtRPMCommand(4000.0));
   }
 
   public void setAutoCommands() {
