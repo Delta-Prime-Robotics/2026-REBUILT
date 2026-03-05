@@ -20,9 +20,10 @@ import frc.robot.Constants.MotorConstants;
 
 public class BeltNado extends SubsystemBase {
   /** Creates a new BeltNado. */
-  private SparkMax m_Motor;
+  private SparkMax m_Motor; //NEO
   private static SparkMaxConfig m_MotorConfig= new SparkMaxConfig();
-  static{
+
+static{
   m_MotorConfig
   .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
   .idleMode(IdleMode.kCoast);
@@ -37,11 +38,9 @@ private void setMotorSpeed(double speed) {
   m_Motor.set(speed);
 }
 
-private void StopMotor() {
+private void stopMotor() {
   m_Motor.set(0);
 }
-
-
 
 
 

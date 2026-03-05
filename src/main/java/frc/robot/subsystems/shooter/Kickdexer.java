@@ -75,6 +75,7 @@ public class Kickdexer extends SubsystemBase {
     m_BottomClosedLoopController = m_bottomMotor.getClosedLoopController();
   }
 
+<<<<<<< HEAD
   void setSpeeds(double topMotorSpeed, double bottomMotorSpeed) {
     m_topMotor.set(topMotorSpeed);
     m_bottomMotor.set(bottomMotorSpeed);
@@ -83,6 +84,9 @@ public class Kickdexer extends SubsystemBase {
   /*void setSetpoints() {
 
   }*/
+=======
+  
+>>>>>>> 01c9801eef492e724a8bcd210b552f18203ee303
 
   @Override
   public void periodic() {

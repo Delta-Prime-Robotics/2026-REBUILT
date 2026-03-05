@@ -57,8 +57,9 @@ public final class Constants {
     public static final int kBeltnadoMotorId = 13;
 
     //Kicker / Indexer
-    public static final int kKickdexerTopMotorId = 14;
-    public static final int kKickdexerBottomMotorId = 15;
+    public static final int kKickdexerBottomMotorId = 14;
+    public static final int kKickdexerTopMotorId = 15;
+    
 
     // Shooter
     public static final int kShooterLeaderMotorId = 16;
