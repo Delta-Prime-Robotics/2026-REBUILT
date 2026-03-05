@@ -10,10 +10,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.MotorConstants;
@@ -35,11 +34,29 @@ public BeltNado() {
 }
 
 private void setMotorSpeed(double speed) {
-  m_Motor.set(speed);
+  m_Motor.set(MathUtil.clamp(speed, -1.0, 1.0));
 }
 
 private void stopMotor() {
   m_Motor.set(0);
+}
+
+public Command runMotorCommand(double speed) {
+  return this.runOnce(() -> setMotorSpeed(speed)).finallyDo(this::stopMotor);
+}
+
+public Command stopMotorCommand() {
+  return this.runOnce(this::stopMotor);
+}
+
+public Command sinWaveMotorCommand(double amplitude, double offset, double frequencyHz) {
+  return this.runEnd(
+      () -> {
+        double waveOutput =
+            offset + (amplitude * Math.sin(2.0 * Math.PI * frequencyHz * Timer.getFPGATimestamp()));
+        setMotorSpeed(waveOutput);
+      },
+      this::stopMotor);
 }
 
 

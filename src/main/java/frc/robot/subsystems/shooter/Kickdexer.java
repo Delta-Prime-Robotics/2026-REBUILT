@@ -7,76 +7,134 @@ package frc.robot.subsystems.shooter;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CanIdsOtherThanDrive;
 import frc.robot.Constants.MotorConstants;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class Kickdexer extends SubsystemBase {
-  private static SparkMax m_topMotor; //NEO
-  private static SparkMax m_bottomMotor; //NEO
-  private static RelativeEncoder m_TopEncoder;
-  private static RelativeEncoder m_BottomEncoder;
-  private static SparkClosedLoopController m_TopClosedLoopController;
-  private static SparkClosedLoopController m_BottomClosedLoopController;
+  private static SparkMax m_topMotor; // NEO
+  private static SparkMax m_bottomMotor; // NEO
+  private static RelativeEncoder m_topEncoder;
+  private static RelativeEncoder m_bottomEncoder;
+  private static SparkClosedLoopController m_topClosedLoopController;
+  private static SparkClosedLoopController m_bottomClosedLoopController;
 
   private static SparkMaxConfig m_topMotorConfig = new SparkMaxConfig();
   private static SparkMaxConfig m_bottomMotorConfig = new SparkMaxConfig();
-
 
   static {
     m_topMotorConfig
         .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
         .idleMode(SparkMaxConfig.IdleMode.kCoast)
         .encoder
-        .velocityConversionFactor(1/4); // gear ratio of 4:1, so we need to divide by 4 to get the output velocity
-      
-    m_bottomMotorConfig
-        .apply(m_topMotorConfig)
-        .inverted(true);
-    
-    //Closed Loop Top Motor
+        .velocityConversionFactor(1 / 4.0); // gear ratio of 4:1
+
+    m_bottomMotorConfig.apply(m_topMotorConfig).inverted(true);
+
+    // Closed Loop Top Motor
     m_topMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(0, 0, 0)
         .feedForward
-        .sv(0,0);
-    
-    //Closed Loop Bottom Motor
+        .sv(0, 0);
+
+    // Closed Loop Bottom Motor
     m_bottomMotorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(0, 0, 0)
         .feedForward
-        .sv(0,0);
-    
+        .sv(0, 0);
   }
 
   /** Creates a new Kickdexer. */
   public Kickdexer() {
     m_topMotor = new SparkMax(CanIdsOtherThanDrive.kKickdexerTopMotorId, MotorType.kBrushless);
-    m_bottomMotor = new SparkMax(CanIdsOtherThanDrive.kKickdexerBottomMotorId, MotorType.kBrushless);
+    m_bottomMotor =
+        new SparkMax(CanIdsOtherThanDrive.kKickdexerBottomMotorId, MotorType.kBrushless);
 
-    m_topMotor.configureAsync(m_topMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_bottomMotor.configureAsync(m_bottomMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_topMotor.configureAsync(
+        m_topMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_bottomMotor.configureAsync(
+        m_bottomMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    m_TopEncoder = m_topMotor.getEncoder();
-    m_BottomEncoder = m_bottomMotor.getEncoder();
+    m_topEncoder = m_topMotor.getEncoder();
+    m_bottomEncoder = m_bottomMotor.getEncoder();
 
-    m_TopClosedLoopController = m_topMotor.getClosedLoopController();
-    m_BottomClosedLoopController = m_bottomMotor.getClosedLoopController();
+    m_topClosedLoopController = m_topMotor.getClosedLoopController();
+    m_bottomClosedLoopController = m_bottomMotor.getClosedLoopController();
   }
 
-  
+  @AutoLogOutput(key = "Kickdexer/TopVelocityRPM")
+  public double getTopEncoderVelocityRPM() {
+    return m_topEncoder.getVelocity();
+  }
+
+  @AutoLogOutput(key = "Kickdexer/BottomVelocityRPM")
+  public double getBottomEncoderVelocityRPM() {
+    return m_bottomEncoder.getVelocity();
+  }
+
+
+  private void setMotorSpeeds(double topSpeed, double bottomSpeed) {
+    m_topMotor.set(topSpeed);
+    m_bottomMotor.set(bottomSpeed);
+
+    Logger.recordOutput("Kickdexer/TopPercentOutput", topSpeed);
+    Logger.recordOutput("Kickdexer/BottomPercentOutput", bottomSpeed);
+  }
+
+  public Command setMotorSpeedsCommand(double topSpeed, double bottomSpeed) {
+    return this.runOnce(() -> setMotorSpeeds(topSpeed, bottomSpeed)).finallyDo(this::stopMotors);
+  }
+
+  private void setVelocitySetpoints(double topSetpointRPM, double bottomSetpointRPM) {
+    m_topClosedLoopController.setSetpoint(
+        topSetpointRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    m_bottomClosedLoopController.setSetpoint(
+        bottomSetpointRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+
+    Logger.recordOutput("Kickdexer/TopSetpointRPM", topSetpointRPM);
+    Logger.recordOutput("Kickdexer/BottomSetpointRPM", bottomSetpointRPM);
+  }
+
+  private void stopMotors() {
+    m_topClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    m_bottomClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+
+    Logger.recordOutput("Kickdexer/TopSetpointRPM", 0.0);
+    Logger.recordOutput("Kickdexer/BottomSetpointRPM", 0.0);
+  }
+
+  public Command setVelocitySetpointsCommand(double topSetpointRPM, double bottomSetpointRPM) {
+    return this.runOnce(() -> setVelocitySetpoints(topSetpointRPM, bottomSetpointRPM));
+  }
+
+  public Command stopKickdexerCommand() {
+    return this.runOnce(this::stopMotors);
+  }
+
+  public Command runAtVelocitySetpointsCommand(double topSetpointRPM, double bottomSetpointRPM) {
+    return this.runEnd(
+        () -> setVelocitySetpoints(topSetpointRPM, bottomSetpointRPM),
+        this::stopMotors);
+  }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    Logger.recordOutput("Kickdexer/TopVelocityRPM", getTopEncoderVelocityRPM());
+    Logger.recordOutput("Kickdexer/BottomVelocityRPM", getBottomEncoderVelocityRPM());
   }
 }
