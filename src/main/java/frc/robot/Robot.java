@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.revrobotics.util.StatusLogger;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.Constants;
@@ -70,6 +71,10 @@ public class Robot extends LoggedRobot {
         break;
     }
 
+    // Set up pathfinding
+    // Pathfinding.setPathfinder(new LocalADStarAK());
+    // PathfindingCommand.warmupCommand().schedule();
+
     // Initialize URCL
     Logger.registerURCL(URCL.startExternal());
     StatusLogger.disableAutoLogging(); // Disable REVLib's built-in logging
@@ -80,6 +85,8 @@ public class Robot extends LoggedRobot {
     // Silence the DS joystick connection warning
     // Warning will be active if FMS is connected
     DriverStation.silenceJoystickConnectionWarning(true);
+    // Forward PhotonVision ports
+    PortForwarder.add(5800, "photonvision.local", 5800);
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
