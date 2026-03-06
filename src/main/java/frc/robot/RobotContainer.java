@@ -24,15 +24,16 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
+import frc.robot.subsystems.BeltNado;
+import frc.robot.subsystems.FlywheelShooter;
+import frc.robot.subsystems.Kickdexer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
-import frc.robot.subsystems.shooter.BeltNado;
-import frc.robot.subsystems.shooter.FlywheelShooter;
-import frc.robot.subsystems.shooter.Kickdexer;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**

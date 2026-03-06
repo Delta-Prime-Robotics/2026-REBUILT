@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -19,13 +19,13 @@ import frc.robot.constants.Constants.MotorConstants;
 
 public class BeltNado extends SubsystemBase {
   /** Creates a new BeltNado. */
-  private SparkMax m_Motor; // NEO
+  private SparkMax m_Motor; // NEO 550
 
   private static SparkMaxConfig m_MotorConfig = new SparkMaxConfig();
 
   static {
     m_MotorConfig
-        .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
+        .smartCurrentLimit(MotorConstants.kNeo550SmartCurrentLimit)
         .idleMode(IdleMode.kCoast)
         .inverted(true);
   }
