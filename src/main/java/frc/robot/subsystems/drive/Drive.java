@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -36,8 +37,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
-import frc.robot.Constants.Mode;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -95,6 +96,7 @@ public class Drive extends SubsystemBase {
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
+    PathfindingCommand.warmupCommand().schedule();
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));

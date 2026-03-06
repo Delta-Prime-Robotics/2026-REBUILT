@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 139,
-      "y": 95,
-      "width": 1100,
-      "height": 650,
+      "x": 229,
+      "y": 0,
+      "width": 1104,
+      "height": 655,
       "state": {
         "sidebar": {
           "width": 300,
@@ -122,7 +122,7 @@
                     }
                   }
                 ],
-                "game": ""
+                "game": "FRC:2026 Field"
               },
               "controllerUUID": "psf0y633oclnjyocus23hcnq1d4tpyte",
               "renderer": {
@@ -458,5 +458,5 @@
     }
   ],
   "satellites": [],
-  "version": "26.0.0"
+  "version": "26.0.1"
 }

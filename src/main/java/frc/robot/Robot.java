@@ -8,8 +8,13 @@
 package frc.robot;
 
 import com.revrobotics.util.StatusLogger;
+import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.Constants;
+import frc.robot.util.AllianceShiftTracker;
+import frc.robot.util.Elastic;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -27,6 +32,7 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private final AllianceShiftTracker allianceShiftTracker;
 
   public Robot() {
     // Record metadata
@@ -65,6 +71,10 @@ public class Robot extends LoggedRobot {
         break;
     }
 
+    // Set up pathfinding
+    // Pathfinding.setPathfinder(new LocalADStarAK());
+    // PathfindingCommand.warmupCommand().schedule();
+
     // Initialize URCL
     Logger.registerURCL(URCL.startExternal());
     StatusLogger.disableAutoLogging(); // Disable REVLib's built-in logging
@@ -72,9 +82,17 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
+    // Silence the DS joystick connection warning
+    // Warning will be active if FMS is connected
+    DriverStation.silenceJoystickConnectionWarning(true);
+    // Forward PhotonVision ports
+    PortForwarder.add(5800, "photonvision.local", 5800);
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
+
+    allianceShiftTracker = new AllianceShiftTracker();
   }
 
   /** This function is called periodically during all modes. */
@@ -91,6 +109,7 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    allianceShiftTracker.update();
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
   }
@@ -112,6 +131,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       CommandScheduler.getInstance().schedule(autonomousCommand);
     }
+
+    // Elastic.selectTab("Autonomous");
   }
 
   /** This function is called periodically during autonomous. */
@@ -128,6 +149,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    Elastic.selectTab("Teleoperated");
   }
 
   /** This function is called periodically during operator control. */
