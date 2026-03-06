@@ -14,12 +14,10 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.MotorConstants;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -90,8 +88,8 @@ public class Kickdexer extends SubsystemBase {
   }
 
   private void setMotorSpeeds(double topMotorSpeed, double bottomMotorSpeed) {
-    topMotorSpeed = MathUtil.clamp(topMotorSpeed, -1.0, 1.0);
-    bottomMotorSpeed = MathUtil.clamp(bottomMotorSpeed, -1.0, 1.0);
+    // topMotorSpeed = MathUtil.clamp(topMotorSpeed, -1.0, 1.0);
+    // bottomMotorSpeed = MathUtil.clamp(bottomMotorSpeed, -1.0, 1.0);
     m_topMotor.set(topMotorSpeed);
     m_bottomMotor.set(bottomMotorSpeed);
 
@@ -125,13 +123,12 @@ public class Kickdexer extends SubsystemBase {
     return this.runOnce(() -> setVelocitySetpoints(topSetpointRPM, bottomSetpointRPM));
   }
 
-  public Command stopKickdexerCommand() {
-    return this.runOnce(this::stopMotors);
-  }
+  // public Command stopKickdexerCommand() {
+  //   return this.runOnce(this::stopMotors);
+  // }
 
   public Command runAtSpeedsCommand(double topMotorSpeed, double bottomMotorSpeed) {
-    return this.runOnce(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed))
-        .finallyDo(this::stopMotors);
+    return this.runEnd(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed), () -> stopMotors());
   }
 
   /*void setSetpoints() {

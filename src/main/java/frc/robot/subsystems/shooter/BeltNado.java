@@ -24,7 +24,10 @@ public class BeltNado extends SubsystemBase {
   private static SparkMaxConfig m_MotorConfig = new SparkMaxConfig();
 
   static {
-    m_MotorConfig.smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit).idleMode(IdleMode.kCoast);
+    m_MotorConfig
+        .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
+        .idleMode(IdleMode.kCoast)
+        .inverted(true);
   }
 
   public BeltNado() {
@@ -42,7 +45,7 @@ public class BeltNado extends SubsystemBase {
   }
 
   public Command runMotorCommand(double speed) {
-    return this.runOnce(() -> setMotorSpeed(speed)).finallyDo(this::stopMotor);
+    return this.runEnd(() -> setMotorSpeed(speed), () -> stopMotor());
   }
 
   public Command stopMotorCommand() {

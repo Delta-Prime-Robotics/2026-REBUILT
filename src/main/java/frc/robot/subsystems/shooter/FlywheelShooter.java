@@ -22,8 +22,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.MotorConstants;
-
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class FlywheelShooter extends SubsystemBase {
@@ -59,7 +60,8 @@ public class FlywheelShooter extends SubsystemBase {
     // configure Shooter Leader
     m_leaderConfig
         .smartCurrentLimit(MotorConstants.kVortexSmartCurrentLimit)
-        .idleMode(IdleMode.kCoast);
+        .idleMode(IdleMode.kCoast)
+        .inverted(true);
 
     // configure Spark Closed Loop Feedforward and PID... To-do: tune these values
     m_leaderConfig
@@ -112,8 +114,8 @@ public class FlywheelShooter extends SubsystemBase {
    *
    * @return The current shooter wheel velocity in RPM
    */
+  @AutoLogOutput(key = "Shooter/VelocityRPM")
   public double getShooterVelocity() {
-    Logger.recordOutput("Shooter/Velocity RPM", m_Encoder.getVelocity());
     return m_Encoder.getVelocity();
   }
 
@@ -149,7 +151,19 @@ public class FlywheelShooter extends SubsystemBase {
     // to decrease spinup time when trying to shoot
     final double shooterAvgSetpointRPM = 4000.0; // Example average shooter setpoint
     return this.runOnce(() -> setShooterSetpoint(shooterAvgSetpointRPM))
-        .handleInterrupt(() -> stopShooter()); // This should only run if the command is interrupted
+        .finallyDo(() -> stopShooter()); // This should only run if the command is interrupted
+  }
+
+  public Command autoWindupCommand(BooleanSupplier shouldWindUpSupplier) {
+    return this.runEnd(
+        () -> {
+          if (shouldWindUpSupplier.getAsBoolean()) {
+            windUpShooterCommand();
+          } else {
+            stopShooter();
+          }
+        },
+        this::stopShooter);
   }
 
   public Command stopShooterCommand() {
@@ -157,7 +171,7 @@ public class FlywheelShooter extends SubsystemBase {
   }
 
   /**
-   * Shoots at a specific RPM
+   * Shoots at a specific RPM A RunOnce Command
    *
    * @param rpm The target RPM to shoot at
    */
@@ -165,6 +179,11 @@ public class FlywheelShooter extends SubsystemBase {
     return this.runOnce(() -> setShooterSetpoint(rpm)).finallyDo(() -> stopShooter());
   }
 
+  /**
+   * Shoots at a specific RPM A Run Command
+   *
+   * @param rpm The target RPM to shoot at
+   */
   public Command runAtRPMCommand(double rpm) {
     return this.runEnd(() -> setShooterSetpoint(rpm), this::stopShooter);
   }
@@ -188,11 +207,15 @@ public class FlywheelShooter extends SubsystemBase {
           double targetRPM = getShooterRPMForDistanceMeters(targetDistanceMeters);
           setShooterSetpoint(targetRPM);
         },
-        this::stopShooter);
+        () -> stopShooter());
   }
 
   public Command autoShootRange(double targetDistanceMeters) {
     return autoShootRange(() -> targetDistanceMeters);
+  }
+
+  public Command runAtSpeedCommand(double speed) {
+    return this.runEnd(() -> m_shooterLeader.set(speed), () -> stopShooter());
   }
 
   @Override
