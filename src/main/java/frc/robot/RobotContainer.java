@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
@@ -98,7 +100,8 @@ public class RobotContainer {
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    setAutoCommands();
+    addNamedAutoCommands();
+    // setAutoCommands();
 
     // uncomment to set drive characterization commands on auto chooser
     // setDriveCharacterizationCommands();
@@ -159,7 +162,7 @@ public class RobotContainer {
 
     // Reset gyro to 0° when B button is pressed
     driverController
-        .b()
+        .back()
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -170,11 +173,12 @@ public class RobotContainer {
 
     // Operator controls
     operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
-    operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.5, -0.5));
+    operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.6, -0.6));
 
-    operatorController.x().whileTrue(beltNado.runMotorCommand(0.5));
+    operatorController.x().whileTrue(beltNado.runMotorCommand(0.75));
+    operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMCommand(4000));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMCommand(3000));
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
     operatorController
@@ -200,6 +204,11 @@ public class RobotContainer {
 
   public void setAutoCommands() {
     autoChooser.addDefaultOption("Do Nothing", Commands.none());
+  }
+
+  public void addNamedAutoCommands() {
+    NamedCommands.registerCommand("feedShooter", AutoCommands.feedShooter(kickdexer, beltNado));
+    NamedCommands.registerCommand("Shoot", flywheelShooter.runAtRPMCommand(3000).withTimeout(3));
   }
 
   public void setDriveCharacterizationCommands() {

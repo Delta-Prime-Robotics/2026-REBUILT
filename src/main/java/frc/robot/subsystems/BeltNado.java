@@ -11,8 +11,8 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.MotorConstants;
@@ -52,15 +52,19 @@ public class BeltNado extends SubsystemBase {
     return this.runOnce(this::stopMotor);
   }
 
-  public Command sinWaveMotorCommand(double amplitude, double offset, double frequencyHz) {
-    return this.runEnd(
-        () -> {
-          double waveOutput =
-              offset
-                  + (amplitude * Math.sin(2.0 * Math.PI * frequencyHz * Timer.getFPGATimestamp()));
-          setMotorSpeed(waveOutput);
-        },
-        this::stopMotor);
+  // public Command sinWaveMotorCommand(double frequencyHz) {
+  //   return this.runEnd(
+  //       () -> {
+  //         double waveOutput = (Math.sin(2.0 * Math.PI * frequencyHz * Timer.getFPGATimestamp()));
+  //         setMotorSpeed(waveOutput);
+  //       },
+  //       this::stopMotor);
+  // }
+
+  public Command shimmyEhShimmyAhCommand() {
+    return new RepeatCommand(
+            runMotorCommand(1).withTimeout(1).andThen(runMotorCommand(-1)).withTimeout(1))
+        .finallyDo(() -> stopMotor());
   }
 
   @Override

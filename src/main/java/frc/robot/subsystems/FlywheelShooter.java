@@ -134,6 +134,10 @@ public class FlywheelShooter extends SubsystemBase {
     Logger.recordOutput("Shooter/Setpoint RPM", 0.0);
   }
 
+  public boolean isAtSetpoint() {
+    return m_ClosedLoopController.isAtSetpoint();
+  }
+
   /**
    * Immediately stops the shooter motors
    *
@@ -176,7 +180,7 @@ public class FlywheelShooter extends SubsystemBase {
    * @param rpm The target RPM to shoot at
    */
   public Command shootAtRPMSCommand(double rpm) {
-    return this.runOnce(() -> setShooterSetpoint(rpm)).finallyDo(() -> stopShooter());
+    return this.runOnce(() -> setShooterSetpoint(rpm));
   }
 
   /**
@@ -216,6 +220,10 @@ public class FlywheelShooter extends SubsystemBase {
 
   public Command runAtSpeedCommand(double speed) {
     return this.runEnd(() -> m_shooterLeader.set(speed), () -> stopShooter());
+  }
+
+  public Command justShootNoStopCommand(double setpoint) {
+    return this.run(() -> setShooterSetpoint(setpoint));
   }
 
   @Override

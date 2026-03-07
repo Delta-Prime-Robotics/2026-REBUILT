@@ -131,6 +131,10 @@ public class Kickdexer extends SubsystemBase {
     return this.runEnd(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed), () -> stopMotors());
   }
 
+  public Command runKickdexerForward() {
+    return runAtSpeedsCommand(-0.5, -0.5);
+  }
+
   /*void setSetpoints() {
 
   }*/
