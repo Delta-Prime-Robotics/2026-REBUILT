@@ -52,9 +52,9 @@ public class DriveConstants {
   // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
   // This changes the drive speed of the module (a pinion gear with more teeth will result in a
   // robot that drives faster).
-  public static final int kDrivingMotorPinionTeeth = 14;
+  public static final int kDrivingMotorPinionTeeth = 13;
   public static final double driveMotorReduction =
-      (45.0 * 22.0) / (kDrivingMotorPinionTeeth * 15.0); // MAXSwerve with 14 pinion teeth
+      (45.0 * 22.0) / (kDrivingMotorPinionTeeth * 15.0); // MAXSwerve with 13 pinion teeth
   // and 22 spur teeth
   public static final DCMotor driveGearbox = DCMotor.getNeoVortex(1);
 
