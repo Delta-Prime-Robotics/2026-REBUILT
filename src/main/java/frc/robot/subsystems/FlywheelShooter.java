@@ -67,14 +67,14 @@ public class FlywheelShooter extends SubsystemBase {
     m_leaderConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(0.0, 0.0, 0.0)
-        .allowedClosedLoopError(kShooterAllowableErrorRPM, ClosedLoopSlot.kSlot0)
-        .maxMotion
-        .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
+        .pid(0.00003, 0.0, 0.00001)
+        .allowedClosedLoopError(kShooterAllowableErrorRPM, ClosedLoopSlot.kSlot0);
+    // .maxMotion
+    // .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
 
     m_leaderConfig.closedLoop.feedForward.sva(
-        0.0, // ks(volts)
-        0.0, // kv(volts per motor rpm)
+        0.34, // ks(volts)
+        0.00167, // kv(volts per motor rpm)
         0.0 // ka(volts per motor rpm squared)
         );
 

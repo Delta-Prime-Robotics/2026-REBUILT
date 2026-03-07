@@ -33,7 +33,6 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -175,7 +174,7 @@ public class RobotContainer {
 
     operatorController.x().whileTrue(beltNado.runMotorCommand(0.5));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtSpeedCommand(0.25));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMCommand(4000));
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
     operatorController
