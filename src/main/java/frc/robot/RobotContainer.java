@@ -207,9 +207,11 @@ public class RobotContainer {
   }
 
   public void addNamedAutoCommands() {
-    NamedCommands.registerCommand("feedShooter", AutoCommands.feedShooter(kickdexer, beltNado));
-    NamedCommands.registerCommand("Shoot", flywheelShooter.runAtRPMCommand(3000).withTimeout(3));
+    NamedCommands.registerCommand("FeedShooter", AutoCommands.feedShooter(kickdexer, beltNado));
+    NamedCommands.registerCommand("Shoot", AutoCommands.shoot(flywheelShooter));
+    NamedCommands.registerCommand("WindUpShooter", AutoCommands.windUpShooter(flywheelShooter));
   }
+  
 
   public void setDriveCharacterizationCommands() {
     // Set up SysId routines

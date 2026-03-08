@@ -222,10 +222,6 @@ public class FlywheelShooter extends SubsystemBase {
     return this.runEnd(() -> m_shooterLeader.set(speed), () -> stopShooter());
   }
 
-  public Command justShootNoStopCommand(double setpoint) {
-    return this.run(() -> setShooterSetpoint(setpoint));
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
