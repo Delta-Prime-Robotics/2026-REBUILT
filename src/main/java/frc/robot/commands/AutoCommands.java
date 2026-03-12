@@ -19,10 +19,10 @@ public class AutoCommands {
   }
 
   public static Command shoot(FlywheelShooter shooter) {
-    return shooter.runAtRPMCommand(3000).withTimeout(10);
+    return shooter.runAtRPMCommand(3000);
   }
 
   public static Command windUpShooter(FlywheelShooter shooter) {
-    return shooter.runAtRPMCommand(3000).until(()-> shooter.isAtSetpoint());
+    return shooter.runAtRPMCommand(3000).until(() -> shooter.isAtSetpoint());
   }
 }

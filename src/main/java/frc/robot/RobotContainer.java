@@ -35,6 +35,11 @@ import frc.robot.subsystems.drive.GyroIONavX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -46,6 +51,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final Vision vision;
   private final FlywheelShooter flywheelShooter = new FlywheelShooter();
   private final Kickdexer kickdexer = new Kickdexer();
   private final BeltNado beltNado = new BeltNado();
@@ -71,6 +77,12 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
+
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
         break;
 
       case SIM:
@@ -83,6 +95,11 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
 
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
         break;
 
       default:
@@ -94,6 +111,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
     }
 
@@ -104,7 +123,7 @@ public class RobotContainer {
     // setAutoCommands();
 
     // uncomment to set drive characterization commands on auto chooser
-    // setDriveCharacterizationCommands();
+    setDriveCharacterizationCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -181,9 +200,9 @@ public class RobotContainer {
     operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMCommand(3000));
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
-    operatorController
-        .leftTrigger()
-        .whileTrue(flywheelShooter.autoShootRange(this::getDistanceToHubMeters));
+    // operatorController
+    //     .leftTrigger()
+    //     .whileTrue(flywheelShooter.autoShootRange(this::getDistanceToHubMeters));
 
     // Keep shooter wound up while in alliance zone. As a default command, this resumes
     // automatically after any other shooter command is interrupted or finishes.
@@ -211,7 +230,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot", AutoCommands.shoot(flywheelShooter));
     NamedCommands.registerCommand("WindUpShooter", AutoCommands.windUpShooter(flywheelShooter));
   }
-  
 
   public void setDriveCharacterizationCommands() {
     // Set up SysId routines
