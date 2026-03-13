@@ -97,9 +97,25 @@ public class Kickdexer extends SubsystemBase {
     Logger.recordOutput("Kickdexer/BottomPercentOutput", bottomMotorSpeed);
   }
 
-  public Command setMotorSpeedsCommand(double topSpeed, double bottomSpeed) {
-    return this.runOnce(() -> setMotorSpeeds(topSpeed, bottomSpeed)).finallyDo(this::stopMotors);
+   private void stopMotors() {
+    m_topClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    m_bottomClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+
+    Logger.recordOutput("Kickdexer/TopPercentOutput", 0.0);
+    Logger.recordOutput("Kickdexer/BottomPercentOutput", 0.0);
   }
+
+   public Command runAtSpeedsCommand(double topMotorSpeed, double bottomMotorSpeed) {
+    return this.runEnd(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed), () -> stopMotors());
+  }
+
+  public Command runKickdexerForward() {
+    return runAtSpeedsCommand(-0.5, -0.5);
+  }
+
+  // ----------------------------------------
+  //  Have not used any of this stuff below
+  // ----------------------------------------
 
   private void setVelocitySetpoints(double topSetpointRPM, double bottomSetpointRPM) {
     m_topClosedLoopController.setSetpoint(
@@ -111,33 +127,10 @@ public class Kickdexer extends SubsystemBase {
     Logger.recordOutput("Kickdexer/BottomSetpointRPM", bottomSetpointRPM);
   }
 
-  private void stopMotors() {
-    m_topClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-    m_bottomClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-
-    Logger.recordOutput("Kickdexer/TopSetpointRPM", 0.0);
-    Logger.recordOutput("Kickdexer/BottomSetpointRPM", 0.0);
-  }
-
   public Command setVelocitySetpointsCommand(double topSetpointRPM, double bottomSetpointRPM) {
     return this.runOnce(() -> setVelocitySetpoints(topSetpointRPM, bottomSetpointRPM));
   }
 
-  // public Command stopKickdexerCommand() {
-  //   return this.runOnce(this::stopMotors);
-  // }
-
-  public Command runAtSpeedsCommand(double topMotorSpeed, double bottomMotorSpeed) {
-    return this.runEnd(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed), () -> stopMotors());
-  }
-
-  public Command runKickdexerForward() {
-    return runAtSpeedsCommand(-0.5, -0.5);
-  }
-
-  /*void setSetpoints() {
-
-  }*/
 
   // @Override
   // public void periodic() {

@@ -24,6 +24,8 @@ import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.MotorConstants;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -134,6 +136,7 @@ public class FlywheelShooter extends SubsystemBase {
     Logger.recordOutput("Shooter/Setpoint RPM", 0.0);
   }
 
+  @AutoLogOutput(key = "Shooter/AtSetpoint")
   public boolean isAtSetpoint() {
     return m_ClosedLoopController.isAtSetpoint();
   }
@@ -153,21 +156,12 @@ public class FlywheelShooter extends SubsystemBase {
   public Command windUpShooterCommand() {
     // Maybe start runing shooter at low speed when on allince side of the field
     // to decrease spinup time when trying to shoot
-    final double shooterAvgSetpointRPM = 4000.0; // Example average shooter setpoint
-    return this.runOnce(() -> setShooterSetpoint(shooterAvgSetpointRPM))
-        .finallyDo(() -> stopShooter()); // This should only run if the command is interrupted
+    final double shooterAvgSetpointRPM = 2700; // Example average shooter setpoint
+    return runAtRPMSCommand(shooterAvgSetpointRPM);// This should only run if the command is interrupted
   }
 
-  public Command autoWindupCommand(BooleanSupplier shouldWindUpSupplier) {
-    return this.runEnd(
-        () -> {
-          if (shouldWindUpSupplier.getAsBoolean()) {
-            windUpShooterCommand();
-          } else {
-            stopShooter();
-          }
-        },
-        this::stopShooter);
+  public Command idleShooterCommand() {
+    return runAtRPMSCommand(1000);
   }
 
   public Command stopShooterCommand() {
@@ -175,20 +169,12 @@ public class FlywheelShooter extends SubsystemBase {
   }
 
   /**
-   * Shoots at a specific RPM A RunOnce Command
-   *
-   * @param rpm The target RPM to shoot at
-   */
-  public Command shootAtRPMSCommand(double rpm) {
-    return this.runOnce(() -> setShooterSetpoint(rpm));
-  }
-
-  /**
    * Shoots at a specific RPM A Run Command
    *
    * @param rpm The target RPM to shoot at
    */
-  public Command runAtRPMCommand(double rpm) {
+  public Command runAtRPMSCommand(double rpm) {
+    System.out.println("Running shooter at " + rpm + " RPM");
     return this.runEnd(() -> setShooterSetpoint(rpm), this::stopShooter);
   }
 

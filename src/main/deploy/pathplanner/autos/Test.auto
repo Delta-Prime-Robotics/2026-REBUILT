@@ -9,6 +9,31 @@
           "data": {
             "pathName": "TopShoot"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WindUpShooter"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FeedShooter"
+                }
+              }
+            ]
+          }
         }
       ]
     }

@@ -11,9 +11,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -55,6 +52,7 @@ public class RobotContainer {
   private final FlywheelShooter flywheelShooter = new FlywheelShooter();
   private final Kickdexer kickdexer = new Kickdexer();
   private final BeltNado beltNado = new BeltNado();
+  private final AutoCommands autoCommands = new AutoCommands();
 
   // Controller
   private final CommandXboxController operatorController = new CommandXboxController(2);
@@ -63,7 +61,6 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private static Field2d field;
-  private boolean autoWindupEnabled = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -116,14 +113,16 @@ public class RobotContainer {
         break;
     }
 
+    addNamedAutoCommands();
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    addNamedAutoCommands();
+    // addNamedAutoCommands();
     // setAutoCommands();
 
     // uncomment to set drive characterization commands on auto chooser
-    setDriveCharacterizationCommands();
+    // setDriveCharacterizationCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -181,7 +180,8 @@ public class RobotContainer {
 
     // Reset gyro to 0° when B button is pressed
     driverController
-        .back()
+        .povDown()
+        .multiPress(2, 2)
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -197,28 +197,15 @@ public class RobotContainer {
     operatorController.x().whileTrue(beltNado.runMotorCommand(0.75));
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMCommand(3000));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
+
+    flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
     // operatorController
     //     .leftTrigger()
     //     .whileTrue(flywheelShooter.autoShootRange(this::getDistanceToHubMeters));
 
-    // Keep shooter wound up while in alliance zone. As a default command, this resumes
-    // automatically after any other shooter command is interrupted or finishes.
-    // flywheelShooter.setDefaultCommand(flywheelShooter.windUpShooterCommand().until(() ->
-    // !isRobotInAllianceZone()));
-  }
-
-  private double getDistanceToHubMeters() {
-    boolean isFlipped =
-        DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
-    Translation2d hubTranslation =
-        isFlipped
-            ? new Translation2d(Units.inchesToMeters(468.56), Units.inchesToMeters(158.32))
-            : new Translation2d(Units.inchesToMeters(181.56), Units.inchesToMeters(158.32));
-    return drive.getPose().getTranslation().getDistance(hubTranslation);
   }
 
   public void setAutoCommands() {
@@ -226,9 +213,10 @@ public class RobotContainer {
   }
 
   public void addNamedAutoCommands() {
-    NamedCommands.registerCommand("FeedShooter", AutoCommands.feedShooter(kickdexer, beltNado));
-    NamedCommands.registerCommand("Shoot", AutoCommands.shoot(flywheelShooter));
-    NamedCommands.registerCommand("WindUpShooter", AutoCommands.windUpShooter(flywheelShooter));
+    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter(kickdexer, beltNado));
+    NamedCommands.registerCommand("Shoot", flywheelShooter.runAtRPMSCommand(3000).withTimeout(5));
+    // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
+    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter(flywheelShooter).withTimeout(1));
   }
 
   public void setDriveCharacterizationCommands() {
