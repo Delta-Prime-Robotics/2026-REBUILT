@@ -139,9 +139,8 @@ public class Kickdexer extends SubsystemBase {
 
   }*/
 
-  @Override
-  public void periodic() {
-    Logger.recordOutput("Kickdexer/TopVelocityRPM", getTopEncoderVelocityRPM());
-    Logger.recordOutput("Kickdexer/BottomVelocityRPM", getBottomEncoderVelocityRPM());
-  }
+  // @Override
+  // public void periodic() {
+
+  // }
 }
