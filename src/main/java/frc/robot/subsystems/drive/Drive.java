@@ -23,6 +23,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -30,6 +31,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,6 +44,8 @@ import frc.robot.constants.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -286,7 +290,7 @@ public class Drive extends SubsystemBase {
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
   }
-
+  
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
@@ -304,6 +308,43 @@ public class Drive extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  public static Supplier<Pose2d> getHubPose() {
+    return  () -> {
+          boolean isFlipped =
+              DriverStation.getAlliance().isPresent()
+                  && DriverStation.getAlliance().get() == Alliance.Red;
+          return isFlipped
+              // Red Hub center field coords
+              ? new Pose2d(
+                  Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Rotation2d.kZero)
+              // Blue Hub center field coords
+              : new Pose2d(
+                  Units.inchesToMeters(181.56), Units.inchesToMeters(158.32), Rotation2d.kZero);
+        };
+  }
+
+  public static Rotation2d getAngleToHub() {
+    Pose2d target = getHubPose().get();
+    if (target == null) {
+      return getRotation();
+    }
+    Pose2d robotPose = getPose();
+    Translation2d delta = target.getTranslation().minus(robotPose.getTranslation());
+    double angle = Math.atan2(delta.getY(), delta.getX());
+    // To flip angle 180 degrees
+    // angle += Math.PI;
+    return new Rotation2d(angle);
+  }
+
+  public static double getDistanceToHubMeters() {
+    Pose2d target = getHubPose().get();
+    if (target == null) {
+      return 0.0;
+    }
+    Pose2d robotPose = getPose();
+    return target.getTranslation().getDistance(robotPose.getTranslation());
   }
 
   /** Returns the maximum linear speed in meters per sec. */
