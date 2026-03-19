@@ -22,6 +22,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.MotorConstants;
+import frc.robot.subsystems.drive.Drive;
+
+import frc.robot.subsystems.drive.Drive;
+
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -183,23 +187,18 @@ public class FlywheelShooter extends SubsystemBase {
 
     // Logger.recordOutput("Shooter/TargetDistanceMeters", distanceMeters);
     Logger.recordOutput("Shooter/ClampedDistanceMeters", clampedDistanceMeters);
-    Logger.recordOutput("Shooter/TargetRPMFromDistance", targetRpm);
-
+    
     return targetRpm;
   }
 
-  public Command autoShootRange(DoubleSupplier targetDistanceMetersSupplier) {
+  public Command autoShootRange() {
     return this.runEnd(
         () -> {
-          double targetDistanceMeters = targetDistanceMetersSupplier.getAsDouble();
+          double targetDistanceMeters = Drive.getDistanceToHubMeters();
           double targetRPM = getShooterRPMForDistanceMeters(targetDistanceMeters);
           setShooterSetpoint(targetRPM);
         },
         () -> stopShooter());
-  }
-
-  public Command autoShootRange(double targetDistanceMeters) {
-    return autoShootRange(() -> targetDistanceMeters);
   }
 
   public Command runAtSpeedCommand(double speed) {

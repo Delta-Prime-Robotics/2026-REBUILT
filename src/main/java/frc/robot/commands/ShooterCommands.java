@@ -16,47 +16,14 @@ import frc.robot.subsystems.drive.Drive;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
 public class ShooterCommands {
   public static Command shootAtHubWhileDriving(
       Drive drive, FlywheelShooter shooter, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-
-    AtomicReference<DoubleSupplier> distanceToHubMeters = new AtomicReference<>(() -> 0.0);
-
-    Supplier<Pose2d> hubPose =
-        () -> {
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          return isFlipped
-              // Red Hub center field coords
-              ? new Pose2d(
-                  Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Rotation2d.kZero)
-              // Blue Hub center field coords
-              : new Pose2d(
-                  Units.inchesToMeters(181.56), Units.inchesToMeters(158.32), Rotation2d.kZero);
-        };
-
     return new ParallelCommandGroup(
-            shooter.autoShootRange(distanceToHubMeters.get()),
-            DriveCommands.aimAtHubWhileDriving(drive, xSupplier, ySupplier, hubPose))
-        .beforeStarting(
-            () -> {
-              distanceToHubMeters.set(
-                  () -> {
-                    Pose2d target = hubPose.get();
-                    if (target == null) {
-                      return 0.0;
-                    }
-                    Pose2d robotPose = drive.getPose();
-                    double distance =
-                        target.getTranslation().getDistance(robotPose.getTranslation());
-                    return distance;
-                  });
-              Logger.recordOutput("Shooter/Distance to Hub",+ distanceToHubMeters.get().getAsDouble());
-            });
+            shooter.autoShootRange(),
+            DriveCommands.aimAtHubWhileDriving(drive, xSupplier, ySupplier));
   }
 }

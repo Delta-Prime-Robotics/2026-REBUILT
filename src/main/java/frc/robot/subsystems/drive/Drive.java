@@ -44,8 +44,6 @@ import frc.robot.constants.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -69,6 +67,7 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+  private static Pose2d latestPose = Pose2d.kZero;
 
   public Drive(
       GyroIO gyroIO,
@@ -176,6 +175,8 @@ public class Drive extends SubsystemBase {
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
+
+    latestPose = poseEstimator.getEstimatedPosition();
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
@@ -290,7 +291,8 @@ public class Drive extends SubsystemBase {
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
   }
-  
+
+  @AutoLogOutput(key = "Odometry/Rotation")
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
@@ -299,6 +301,7 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    latestPose = pose;
   }
 
   /** Adds a new timestamped vision measurement. */
@@ -310,27 +313,21 @@ public class Drive extends SubsystemBase {
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
-  public static Supplier<Pose2d> getHubPose() {
-    return  () -> {
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          return isFlipped
-              // Red Hub center field coords
-              ? new Pose2d(
-                  Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Rotation2d.kZero)
-              // Blue Hub center field coords
-              : new Pose2d(
-                  Units.inchesToMeters(181.56), Units.inchesToMeters(158.32), Rotation2d.kZero);
-        };
+  public static Pose2d getHubPose() {
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    return isFlipped
+        // Red Hub center field coords
+        ? new Pose2d(Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Rotation2d.kZero)
+        // Blue Hub center field coords
+        : new Pose2d(Units.inchesToMeters(181.56), Units.inchesToMeters(158.32), Rotation2d.kZero);
   }
 
+  @AutoLogOutput(key = "Drive/AngleToHub")
   public static Rotation2d getAngleToHub() {
-    Pose2d target = getHubPose().get();
-    if (target == null) {
-      return getRotation();
-    }
-    Pose2d robotPose = getPose();
+    Pose2d target = getHubPose();
+    Pose2d robotPose = latestPose;
     Translation2d delta = target.getTranslation().minus(robotPose.getTranslation());
     double angle = Math.atan2(delta.getY(), delta.getX());
     // To flip angle 180 degrees
@@ -338,12 +335,10 @@ public class Drive extends SubsystemBase {
     return new Rotation2d(angle);
   }
 
+  @AutoLogOutput(key = "Drive/DistanceToHubMeters")
   public static double getDistanceToHubMeters() {
-    Pose2d target = getHubPose().get();
-    if (target == null) {
-      return 0.0;
-    }
-    Pose2d robotPose = getPose();
+    Pose2d target = getHubPose();
+    Pose2d robotPose = latestPose;
     return target.getTranslation().getDistance(robotPose.getTranslation());
   }
 

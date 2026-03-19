@@ -164,26 +164,27 @@ public class RobotContainer {
                 () -> Rotation2d.fromDegrees(45)));
 
     // Aim at hub when A button is held
-    driverController
-        .a()
-        .whileTrue(
-            DriveCommands.aimAtHubWhileDriving(
-                drive,
-                () -> -driverController.getLeftY(),
-                () ->
-                    -driverController
-                        .getLeftX())); // to-do, maybe create constant for these field coords
-    // I also saw another team that was houseing these coords in a separate file
-    // that way only one boolean to flip the allience was needed for all coords
-
     // driverController
     //     .a()
     //     .whileTrue(
-    //         ShooterCommands.shootAtHubWhileDriving(
+    //         DriveCommands.aimAtHubWhileDriving(
     //             drive,
-    //             flywheelShooter,
     //             () -> -driverController.getLeftY(),
-    //             () -> -driverController.getLeftX()));
+    //             () ->
+    //                 -driverController
+    //                     .getLeftX())); 
+    // to-do, maybe create constant for these field coords
+    // I also saw another team that was houseing these coords in a separate file
+    // that way only one boolean to flip the allience was needed for all coords
+
+    driverController
+        .a()
+        .whileTrue(
+            ShooterCommands.shootAtHubWhileDriving(
+                drive,
+                flywheelShooter,
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
