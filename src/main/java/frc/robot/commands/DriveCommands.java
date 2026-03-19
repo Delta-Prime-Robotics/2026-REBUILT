@@ -250,6 +250,11 @@ public class DriveCommands {
     return joystickDriveWithAimingAtPoint(drive, xSupplier, ySupplier, hubPose);
   }
 
+  public static Command aimAtHubWhileDriving(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Supplier<Pose2d> hubPose) {
+    return joystickDriveWithAimingAtPoint(drive, xSupplier, ySupplier, hubPose);
+  }
+
   /**
    * Measures the velocity feedforward constants for the drive motors.
    *

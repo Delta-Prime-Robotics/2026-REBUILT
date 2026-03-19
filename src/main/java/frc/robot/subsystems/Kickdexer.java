@@ -97,7 +97,7 @@ public class Kickdexer extends SubsystemBase {
     Logger.recordOutput("Kickdexer/BottomPercentOutput", bottomMotorSpeed);
   }
 
-   private void stopMotors() {
+  private void stopMotors() {
     m_topClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     m_bottomClosedLoopController.setSetpoint(0.0, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
 
@@ -105,7 +105,7 @@ public class Kickdexer extends SubsystemBase {
     Logger.recordOutput("Kickdexer/BottomPercentOutput", 0.0);
   }
 
-   public Command runAtSpeedsCommand(double topMotorSpeed, double bottomMotorSpeed) {
+  public Command runAtSpeedsCommand(double topMotorSpeed, double bottomMotorSpeed) {
     return this.runEnd(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed), () -> stopMotors());
   }
 
@@ -130,7 +130,6 @@ public class Kickdexer extends SubsystemBase {
   public Command setVelocitySetpointsCommand(double topSetpointRPM, double bottomSetpointRPM) {
     return this.runOnce(() -> setVelocitySetpoints(topSetpointRPM, bottomSetpointRPM));
   }
-
 
   // @Override
   // public void periodic() {

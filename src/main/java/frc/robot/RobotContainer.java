@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.BeltNado;
@@ -52,7 +53,7 @@ public class RobotContainer {
   private final FlywheelShooter flywheelShooter = new FlywheelShooter();
   private final Kickdexer kickdexer = new Kickdexer();
   private final BeltNado beltNado = new BeltNado();
-  private final AutoCommands autoCommands = new AutoCommands();
+  private final AutoCommands autoCommands = new AutoCommands(kickdexer, beltNado, flywheelShooter);
 
   // Controller
   private final CommandXboxController operatorController = new CommandXboxController(2);
@@ -175,6 +176,15 @@ public class RobotContainer {
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
 
+    // driverController
+    //     .a()
+    //     .whileTrue(
+    //         ShooterCommands.shootAtHubWhileDriving(
+    //             drive,
+    //             flywheelShooter,
+    //             () -> -driverController.getLeftY(),
+    //             () -> -driverController.getLeftX()));
+
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
@@ -213,10 +223,10 @@ public class RobotContainer {
   }
 
   public void addNamedAutoCommands() {
-    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter(kickdexer, beltNado));
+    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter());
     NamedCommands.registerCommand("Shoot", flywheelShooter.runAtRPMSCommand(3000).withTimeout(5));
     // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
-    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter(flywheelShooter).withTimeout(1));
+    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter().withTimeout(1));
   }
 
   public void setDriveCharacterizationCommands() {

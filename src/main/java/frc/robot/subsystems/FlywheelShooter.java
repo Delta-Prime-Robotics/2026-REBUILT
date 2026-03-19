@@ -22,10 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.MotorConstants;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -157,7 +154,8 @@ public class FlywheelShooter extends SubsystemBase {
     // Maybe start runing shooter at low speed when on allince side of the field
     // to decrease spinup time when trying to shoot
     final double shooterAvgSetpointRPM = 2700; // Example average shooter setpoint
-    return runAtRPMSCommand(shooterAvgSetpointRPM);// This should only run if the command is interrupted
+    return runAtRPMSCommand(
+        shooterAvgSetpointRPM); // This should only run if the command is interrupted
   }
 
   public Command idleShooterCommand() {
@@ -183,7 +181,7 @@ public class FlywheelShooter extends SubsystemBase {
         MathUtil.clamp(distanceMeters, kMinCalibratedDistanceMeters, kMaxCalibratedDistanceMeters);
     double targetRpm = kShooterDistanceToRpmMap.get(clampedDistanceMeters);
 
-    Logger.recordOutput("Shooter/TargetDistanceMeters", distanceMeters);
+    // Logger.recordOutput("Shooter/TargetDistanceMeters", distanceMeters);
     Logger.recordOutput("Shooter/ClampedDistanceMeters", clampedDistanceMeters);
     Logger.recordOutput("Shooter/TargetRPMFromDistance", targetRpm);
 
