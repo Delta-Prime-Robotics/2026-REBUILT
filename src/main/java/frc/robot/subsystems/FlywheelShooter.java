@@ -23,10 +23,6 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.MotorConstants;
 import frc.robot.subsystems.drive.Drive;
-
-import frc.robot.subsystems.drive.Drive;
-
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -187,7 +183,7 @@ public class FlywheelShooter extends SubsystemBase {
 
     // Logger.recordOutput("Shooter/TargetDistanceMeters", distanceMeters);
     Logger.recordOutput("Shooter/ClampedDistanceMeters", clampedDistanceMeters);
-    
+
     return targetRpm;
   }
 

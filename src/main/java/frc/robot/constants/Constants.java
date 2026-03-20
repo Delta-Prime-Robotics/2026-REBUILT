@@ -21,10 +21,8 @@ public final class Constants {
   public static enum Mode {
     /** Running on a real robot. */
     REAL,
-
     /** Running a physics simulator. */
     SIM,
-
     /** Replaying from a log file. */
     REPLAY
   }
@@ -63,5 +61,21 @@ public final class Constants {
     // Shooter
     public static final int kShooterLeaderMotorId = 16;
     // public static final int kShooterFollowerMotorId = 16;
+  }
+
+  public static final class IntakeConstants {
+    public static final double kArmStowPosition = 0.75;
+    public static final double kArmIntakePosition = 0.27;
+    public static final double kArmThrustInwardPosition = 0.75;
+    public static final double kArmThrustOutwardPosition = 0.5;
+    public static final double kArmMinAngle = 0.0;
+    public static final double kArmMaxAngle = 0.85;
+
+    public enum IntakeState {
+      INTAKING,
+      OUTTAKING,
+      STOWED,
+      THRUSTING
+    }
   }
 }

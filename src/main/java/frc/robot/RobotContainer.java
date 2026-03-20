@@ -21,11 +21,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.IntakeConstants.IntakeState;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.BeltNado;
 import frc.robot.subsystems.FlywheelShooter;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kickdexer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -53,6 +54,7 @@ public class RobotContainer {
   private final FlywheelShooter flywheelShooter = new FlywheelShooter();
   private final Kickdexer kickdexer = new Kickdexer();
   private final BeltNado beltNado = new BeltNado();
+  private final Intake intake = new Intake();
   private final AutoCommands autoCommands = new AutoCommands(kickdexer, beltNado, flywheelShooter);
 
   // Controller
@@ -75,7 +77,6 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
-
         vision =
             new Vision(
                 drive::addVisionMeasurement,
@@ -164,27 +165,23 @@ public class RobotContainer {
                 () -> Rotation2d.fromDegrees(45)));
 
     // Aim at hub when A button is held
-    // driverController
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.aimAtHubWhileDriving(
-    //             drive,
-    //             () -> -driverController.getLeftY(),
-    //             () ->
-    //                 -driverController
-    //                     .getLeftX())); 
+    driverController
+        .a()
+        .whileTrue(
+            DriveCommands.aimAtHubWhileDriving(
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
     // to-do, maybe create constant for these field coords
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
 
-    driverController
-        .a()
-        .whileTrue(
-            ShooterCommands.shootAtHubWhileDriving(
-                drive,
-                flywheelShooter,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX()));
+    // driverController
+    //     .a()
+    //     .whileTrue(
+    //         ShooterCommands.shootAtHubWhileDriving(
+    //             drive,
+    //             flywheelShooter,
+    //             () -> -driverController.getLeftY(),
+    //             () -> -driverController.getLeftX()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -208,7 +205,9 @@ public class RobotContainer {
     operatorController.x().whileTrue(beltNado.runMotorCommand(0.75));
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
+    // operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
+    operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
 
     flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
 
