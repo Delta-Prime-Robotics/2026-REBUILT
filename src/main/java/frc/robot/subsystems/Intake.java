@@ -134,54 +134,8 @@ public class Intake extends SubsystemBase {
     return m_armController.isAtSetpoint();
   }
 
-  public Command runIntake(double speed) {
-    return this.runEnd(() -> setIntakeSpeed(speed), () -> stopIntake());
-  }
+  
 
-  public Command runArmToAngle(double armPosZeroToOne) {
-    return this.runEnd(() -> setArmSetpoint(armPosZeroToOne), () -> stopArm())
-        .until(() -> isArmAtSetpoint());
-  }
-
-  public Command thrustingCommand() {
-    currentIntakeState = IntakeState.THRUSTING;
-    return new SequentialCommandGroup(
-            this.runArmToAngle(IntakeConstants.kArmThrustInwardPosition),
-            new WaitCommand(0.5),
-            this.runArmToAngle(IntakeConstants.kArmThrustOutwardPosition),
-            new WaitCommand(0.5))
-        .finallyDo(() -> runArmToIntakeState(IntakeState.STOWED));
-  }
-
-  public Command intakeingCommand(double speed) {
-    currentIntakeState = IntakeState.INTAKING;
-    return this.runArmToAngle(IntakeConstants.kArmIntakePosition)
-    .finallyDo(()->stopArm());
-  }
-
-  public Command stowingCommand() {
-    currentIntakeState = IntakeState.STOWED;
-    return this.runArmToAngle(IntakeConstants.kArmStowPosition);
-  }
-
-  public Command runArmToIntakeState(IntakeState intakeState) {
-    switch (intakeState) {
-      case INTAKING:
-        return intakeingCommand(0.75);
-      case OUTTAKING:
-        return intakeingCommand(-0.75);
-      case STOWED:
-        return stowingCommand();
-      case THRUSTING:
-        return thrustingCommand();
-      default:
-        return run(
-            () -> {
-              stopArm();
-              stopIntake();
-            });
-    }
-  }
 }
 
   // @Override

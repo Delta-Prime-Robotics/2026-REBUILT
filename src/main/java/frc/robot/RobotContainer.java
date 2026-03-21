@@ -207,7 +207,6 @@ public class RobotContainer {
 
     // operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
     operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
-    operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
 
     flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
 
