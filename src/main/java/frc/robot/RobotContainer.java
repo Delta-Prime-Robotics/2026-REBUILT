@@ -26,6 +26,7 @@ import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.BeltNado;
 import frc.robot.subsystems.FlywheelShooter;
+import frc.robot.subsystems.Haptics;
 import frc.robot.subsystems.Kickdexer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -58,6 +59,9 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController operatorController = new CommandXboxController(2);
   private final CommandXboxController driverController = new CommandXboxController(3);
+
+  public final Haptics driverHaptics = new Haptics(driverController);
+  public final Haptics operatorHaptics = new Haptics(operatorController);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
