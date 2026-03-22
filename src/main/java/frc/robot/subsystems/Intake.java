@@ -18,9 +18,11 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.IntakeConstants.*;
@@ -43,6 +45,7 @@ public class Intake extends SubsystemBase {
   private final SparkClosedLoopController m_armController;
 
   public static IntakeState currentIntakeState = IntakeState.STOWED;
+  public static double m_armPose = 0.0; // 0 to 1, where 0 is stowed and 1 is fully extended
 
   static {
     m_intakeConfig
@@ -84,9 +87,10 @@ public class Intake extends SubsystemBase {
     m_armEncoder = m_leftArm.getAbsoluteEncoder();
   }
 
-  @AutoLogOutput(key = "Intake/ArmAngleZeroToOne")
+  @AutoLogOutput(key = "Intake/ArmAngle")
   public double getArmAngleZeroToOne() {
-    return m_armEncoder.getPosition();
+    return m_armPose;
+    // return m_armEncoder.getPosition();
   }
 
   @AutoLogOutput(key = "Intake/State")
@@ -106,15 +110,15 @@ public class Intake extends SubsystemBase {
 
   private void setArmSpeed(double speed) {
     double outSpeed = 0.0;
-
+    Logger.recordOutput("Intake/IntakeSpeed", speed);
     if ((getArmAngleZeroToOne() > IntakeConstants.kArmMinAngle)
-        || (getArmAngleZeroToOne() < IntakeConstants.kArmMaxAngle)) {
+        && (getArmAngleZeroToOne() < IntakeConstants.kArmMaxAngle)) {
       outSpeed = speed;
     } else {
       outSpeed = 0.0;
     }
 
-    m_leftArm.set(speed);
+    m_leftArm.set(outSpeed);
   }
 
   private void stopArm() {
@@ -139,37 +143,42 @@ public class Intake extends SubsystemBase {
   }
 
   public Command runArmToAngle(double armPosZeroToOne) {
-    return this.runEnd(() -> setArmSetpoint(armPosZeroToOne), () -> stopArm())
-        .until(() -> isArmAtSetpoint());
+    return Commands.runOnce(() -> setArmSetpoint(armPosZeroToOne), this)
+        .andThen(Commands.waitUntil(this::isArmAtSetpoint)
+          .alongWith(
+            Commands.waitSeconds(0.25)
+            .andThen(runOnce(()->{m_armPose = armPosZeroToOne;}))
+        ))
+        .finallyDo(interrupted -> stopArm());
   }
 
   public Command thrustingCommand() {
-    currentIntakeState = IntakeState.THRUSTING;
-    return new SequentialCommandGroup(
-            this.runArmToAngle(IntakeConstants.kArmThrustInwardPosition),
-            new WaitCommand(0.5),
-            this.runArmToAngle(IntakeConstants.kArmThrustOutwardPosition),
-            new WaitCommand(0.5))
-        .finallyDo(() -> runArmToIntakeState(IntakeState.STOWED));
+    return this.runArmToAngle(IntakeConstants.kArmThrustInwardPosition).andThen(
+        this.runArmToAngle(IntakeConstants.kArmThrustOutwardPosition))
+        .finallyDo(()-> {stopArm(); stopIntake();})
+        .beforeStarting(() -> currentIntakeState = IntakeState.THRUSTING);
   }
 
-  public Command intakeingCommand(double speed) {
-    currentIntakeState = IntakeState.INTAKING;
-    return this.runArmToAngle(IntakeConstants.kArmIntakePosition)
-    .finallyDo(()->stopArm());
+  public Command intakingCommand(double speed) {
+    return this.runArmToAngle(IntakeConstants.kArmIntakePosition).alongWith(
+            Commands.run(() -> setIntakeSpeed(speed)))
+        .finallyDo(()-> {stopArm(); stopIntake();})
+        .beforeStarting(() -> currentIntakeState = IntakeState.INTAKING);
   }
 
   public Command stowingCommand() {
-    currentIntakeState = IntakeState.STOWED;
-    return this.runArmToAngle(IntakeConstants.kArmStowPosition);
+    return Commands.sequence(
+            Commands.runOnce(this::stopIntake, this),
+            this.runArmToAngle(IntakeConstants.kArmStowPosition))
+        .beforeStarting(() -> currentIntakeState = IntakeState.STOWED);
   }
 
   public Command runArmToIntakeState(IntakeState intakeState) {
     switch (intakeState) {
       case INTAKING:
-        return intakeingCommand(0.75);
+        return intakingCommand(0.75);
       case OUTTAKING:
-        return intakeingCommand(-0.75);
+        return intakingCommand(-0.75);
       case STOWED:
         return stowingCommand();
       case THRUSTING:

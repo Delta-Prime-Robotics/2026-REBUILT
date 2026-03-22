@@ -66,7 +66,7 @@ public final class Constants {
   public static final class IntakeConstants {
     public static final double kArmStowPosition = 0.75;
     public static final double kArmIntakePosition = 0.27;
-    public static final double kArmThrustInwardPosition = 0.75;
+    public static final double kArmThrustInwardPosition = 0.65;
     public static final double kArmThrustOutwardPosition = 0.5;
     public static final double kArmMinAngle = 0.0;
     public static final double kArmMaxAngle = 0.85;
