@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController;
@@ -42,6 +43,7 @@ public class Haptics extends SubsystemBase {
    * @param type The type of buzz, Heavy, Medium, or Light
    */
   private void setBuzz(double buzz, RumbleType type) {
+    MathUtil.clamp(buzz, 0, 1);
     m_controller.setRumble(type, buzz);
   }
 
@@ -147,6 +149,10 @@ public class Haptics extends SubsystemBase {
         )
         .withTimeout(totalTime)
         .finallyDo(() -> stopBuzzing(kMedium));
+  }
+
+  public Command shiftChangeIn5Command() {
+    return onOffBuzzRepeat(1, kMedium, (3/4), 5);
   }
 
 }
