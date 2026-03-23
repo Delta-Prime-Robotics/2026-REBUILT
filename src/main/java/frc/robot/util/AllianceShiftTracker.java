@@ -9,8 +9,11 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.subsystems.Haptics;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 public class AllianceShiftTracker {
@@ -23,16 +26,27 @@ public class AllianceShiftTracker {
       TRANSITION_DURATION + (SHIFT_DURATION * SHIFT_COUNT) + ENDGAME_DURATION;
 
   private AutoWinner latchedAutoWinner = AutoWinner.UNKNOWN;
+  private Haptics[] haptics;
+
+  private final Set<String> warnedShiftPhases = new HashSet<>();
+
+  public AllianceShiftTracker() {}
+
+  public AllianceShiftTracker(Haptics... haptics) {
+    this.haptics = haptics;
+  }
 
   public void update() {
     double matchTime = DriverStation.getMatchTime();
     Optional<Alliance> myAlliance = DriverStation.getAlliance();
     if (DriverStation.isDisabled() && matchTime <= 0) {
       latchedAutoWinner = AutoWinner.UNKNOWN;
+      warnedShiftPhases.clear();
     }
     AutoWinner autoWinner = updateAutoWinner(DriverStation.getGameSpecificMessage());
 
     ShiftState shiftState = computeShiftState(matchTime, autoWinner);
+    maybeRunShiftWarning(shiftState);
     boolean isMyAllianceActive =
         myAlliance.map(alliance -> shiftState.activeAlliance.isActiveFor(alliance)).orElse(false);
 
@@ -90,6 +104,23 @@ public class AllianceShiftTracker {
     }
 
     return new ShiftState("Disabled", ActiveAlliance.UNKNOWN, ActiveAlliance.UNKNOWN, 0.0);
+  }
+
+  private void maybeRunShiftWarning(ShiftState shiftState) {
+    if (!DriverStation.isTeleopEnabled()) {
+      return;
+    }
+
+    boolean shouldWarn =
+        shiftState.secondsToNextShift > 0.0
+            && shiftState.secondsToNextShift <= 5.0
+            && shiftState.nextActiveAlliance != ActiveAlliance.BLUE;
+
+    if (shouldWarn && warnedShiftPhases.add(shiftState.phaseName)) {
+      for (Haptics haptic : this.haptics) {
+        haptic.shiftChangeIn5Command();
+      }
+    }
   }
 
   private static ActiveAlliance activeAllianceForShift(
