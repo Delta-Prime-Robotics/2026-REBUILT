@@ -19,10 +19,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.IntakeConstants.*;
@@ -53,18 +50,25 @@ public class Intake extends SubsystemBase {
         .smartCurrentLimit(MotorConstants.kVortexSmartCurrentLimit);
 
     m_armConfig
-        .apply(m_intakeConfig)
+        .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
+        .inverted(false)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .pid(0.0, 0.0, 0.0)
-        .allowedClosedLoopError(0, ClosedLoopSlot.kSlot0)
+        .pid(0.04, 0.0, 0.0)
+        .allowedClosedLoopError(1, ClosedLoopSlot.kSlot0)
         .positionWrappingEnabled(false)
         .positionWrappingInputRange(IntakeConstants.kArmMinAngle, IntakeConstants.kArmMaxAngle)
         .maxMotion
+        .cruiseVelocity(0.0)
         .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
 
-    m_armConfig.closedLoop.feedForward.svacr(0, 0, 0, 0, 0);
+    m_armConfig
+        .absoluteEncoder
+        .inverted(true)
+        .positionConversionFactor(75); // 5:1, 5:1, 75:1 Encoder on finalShaft
+
+    m_armConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
   }
 
   /** Creates a new Intake. */
@@ -76,15 +80,15 @@ public class Intake extends SubsystemBase {
     m_intake.configure(
         m_intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_leftArm.configure(
-        m_armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    m_rightArm.configure(
         m_armConfig.follow(CanIdsOtherThanDrive.kLeftArmId, true),
         ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
+    m_rightArm.configure(
+        m_armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    m_armController = m_leftArm.getClosedLoopController();
+    m_armController = m_rightArm.getClosedLoopController();
 
-    m_armEncoder = m_leftArm.getAbsoluteEncoder();
+    m_armEncoder = m_rightArm.getAbsoluteEncoder();
   }
 
   @AutoLogOutput(key = "Intake/ArmAngle")
@@ -118,7 +122,7 @@ public class Intake extends SubsystemBase {
       outSpeed = 0.0;
     }
 
-    m_leftArm.set(outSpeed);
+    m_rightArm.set(outSpeed);
   }
 
   private void stopArm() {
@@ -144,25 +148,37 @@ public class Intake extends SubsystemBase {
 
   public Command runArmToAngle(double armPosZeroToOne) {
     return Commands.runOnce(() -> setArmSetpoint(armPosZeroToOne), this)
-        .andThen(Commands.waitUntil(this::isArmAtSetpoint)
-          .alongWith(
-            Commands.waitSeconds(0.25)
-            .andThen(runOnce(()->{m_armPose = armPosZeroToOne;}))
-        ))
+        .andThen(
+            Commands.waitUntil(this::isArmAtSetpoint)
+                .alongWith(
+                    Commands.waitSeconds(0.25)
+                        .andThen(
+                            runOnce(
+                                () -> {
+                                  m_armPose = armPosZeroToOne;
+                                }))))
         .finallyDo(interrupted -> stopArm());
   }
 
   public Command thrustingCommand() {
-    return this.runArmToAngle(IntakeConstants.kArmThrustInwardPosition).andThen(
-        this.runArmToAngle(IntakeConstants.kArmThrustOutwardPosition))
-        .finallyDo(()-> {stopArm(); stopIntake();})
+    return this.runArmToAngle(IntakeConstants.kArmThrustInwardPosition)
+        .andThen(this.runArmToAngle(IntakeConstants.kArmThrustOutwardPosition))
+        .finallyDo(
+            () -> {
+              stopArm();
+              stopIntake();
+            })
         .beforeStarting(() -> currentIntakeState = IntakeState.THRUSTING);
   }
 
   public Command intakingCommand(double speed) {
-    return this.runArmToAngle(IntakeConstants.kArmIntakePosition).alongWith(
-            Commands.run(() -> setIntakeSpeed(speed)))
-        .finallyDo(()-> {stopArm(); stopIntake();})
+    return this.runArmToAngle(IntakeConstants.kArmIntakePosition)
+        .alongWith(Commands.run(() -> setIntakeSpeed(speed)))
+        .finallyDo(
+            () -> {
+              stopArm();
+              stopIntake();
+            })
         .beforeStarting(() -> currentIntakeState = IntakeState.INTAKING);
   }
 

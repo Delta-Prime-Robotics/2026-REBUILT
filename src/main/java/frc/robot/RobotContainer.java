@@ -202,19 +202,24 @@ public class RobotContainer {
     operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
     operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.6, -0.6));
 
-    operatorController.x().whileTrue(
-        beltNado.runMotorCommand(0.75)
-        .alongWith(intake.runArmToIntakeState(IntakeState.THRUSTING)))
-      .onFalse(intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
+    operatorController
+        .x()
+        .whileTrue(
+            beltNado
+                .runMotorCommand(0.75)
+                .alongWith(intake.runArmToIntakeState(IntakeState.THRUSTING)))
+        .onFalse(
+            intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
     // operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
     operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
-    operatorController.leftTrigger()
-      .whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING))
-      .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
+    operatorController
+        .leftTrigger()
+        .whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING))
+        .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
-    flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
+    // flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
     // operatorController
