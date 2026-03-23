@@ -112,7 +112,9 @@ public class Haptics extends SubsystemBase {
    */
   public Command onOffVarBuzzRepeat(
       double lightbuzz, double heavyBuzz, double buzzTime, double noBuzzTime, double totalTime) {
-    return new RepeatCommand(buzzVarBothFor(lightbuzz, heavyBuzz, buzzTime).andThen(Commands.waitSeconds(noBuzzTime)))
+    return new RepeatCommand(
+            buzzVarBothFor(lightbuzz, heavyBuzz, buzzTime)
+                .andThen(Commands.waitSeconds(noBuzzTime)))
         .withTimeout(totalTime)
         .finallyDo(() -> stopBuzzing(kMedium));
   }
@@ -137,20 +139,20 @@ public class Haptics extends SubsystemBase {
   }
 
   public Command shiftChangeToMyAlliance() {
-    return onOffBuzzRepeat(0.6, RumbleType.kBothRumble, 0.1, 0.1, 1)
+    return onOffBuzzRepeat(0.7, RumbleType.kBothRumble, 0.1, 0.1, 1)
         .andThen(onOffBuzzRepeat(0.5, RumbleType.kBothRumble, 0.5, 0.5, 5));
-        // .andThen(Commands.waitSeconds(0.5))
-        // .andThen(buzzFor(0.8, RumbleType.kBothRumble, 0.2));
+    // .andThen(Commands.waitSeconds(0.5))
+    // .andThen(buzzFor(0.8, RumbleType.kBothRumble, 0.2));
   }
 
   public Command shiftChangeOutOfMyAlliance() {
-    return onOffBuzzRepeat(0.6, RumbleType.kBothRumble, 0.1, 0.1, 1)
+    return onOffBuzzRepeat(0.7, RumbleType.kBothRumble, 0.1, 0.1, 1)
         .andThen(Commands.waitSeconds(3))
         .andThen(alternatingBuzzRepeat(0.7, 0.7, 0.2, 0.1, 1.5));
   }
 
   public Command endGame() {
-    return onOffBuzzRepeat(0.6, RumbleType.kBothRumble, 0.1, 0.1, 1)
+    return onOffBuzzRepeat(0.7, RumbleType.kBothRumble, 0.1, 0.1, 1)
         .andThen(onOffBuzzRepeat(0.4, RumbleType.kBothRumble, 0.5, 0.5, 15));
   }
 }

@@ -9,6 +9,7 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Haptics;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import java.util.Set;
 import org.littletonrobotics.junction.Logger;
 
 public class AllianceShiftTracker {
+  private static final double UPDATE_INTERVAL_SECONDS = 1.0;
   private static final double AUTO_DURATION = 20.0;
   private static final double TRANSITION_DURATION = 10.0;
   private static final double SHIFT_DURATION = 25.0;
@@ -31,6 +33,7 @@ public class AllianceShiftTracker {
   private boolean isMyAllianceActive = false;
   private Haptics[] haptics;
   private CommandScheduler commandScheduler = CommandScheduler.getInstance();
+  private double lastTelemetryUpdateTimestamp = Double.NEGATIVE_INFINITY;
 
   private final Set<String> warnedShiftPhases = new HashSet<>();
 
@@ -41,19 +44,35 @@ public class AllianceShiftTracker {
   }
 
   public void update() {
+    double now = Timer.getFPGATimestamp();
     double matchTime = DriverStation.getMatchTime();
-    myAlliance = DriverStation.getAlliance();
     if (DriverStation.isDisabled() && matchTime <= 0) {
       latchedAutoWinner = AutoWinner.UNKNOWN;
       warnedShiftPhases.clear();
+      myAlliance = DriverStation.getAlliance();
     }
-    AutoWinner autoWinner = updateAutoWinner(DriverStation.getGameSpecificMessage());
+    if (matchTime >= 130){ //130 seconds
+      updateAutoWinner(DriverStation.getGameSpecificMessage());
+      myAlliance = DriverStation.getAlliance();
+    }
 
-    ShiftState shiftState = computeShiftState(matchTime, autoWinner);
+    ShiftState shiftState = computeShiftState(matchTime, latchedAutoWinner);
     maybeRunShiftWarning(shiftState);
     isMyAllianceActive =
         myAlliance.map(alliance -> shiftState.activeAlliance.isActiveFor(alliance)).orElse(false);
 
+    if (now - lastTelemetryUpdateTimestamp >= UPDATE_INTERVAL_SECONDS) {
+      lastTelemetryUpdateTimestamp = now;
+      logTelemetry(matchTime, latchedAutoWinner, shiftState, myAlliance, isMyAllianceActive);
+    }
+  }
+
+  private static void logTelemetry(
+      double matchTime,
+      AutoWinner autoWinner,
+      ShiftState shiftState,
+      Optional<Alliance> myAlliance,
+      boolean isMyAllianceActive) {
     Logger.recordOutput("AllianceShift/MatchTimeRemaining", matchTime);
     Logger.recordOutput("AllianceShift/AutoWinner", autoWinner.displayName);
     Logger.recordOutput("AllianceShift/CurrentPhase", shiftState.phaseName);
@@ -61,8 +80,7 @@ public class AllianceShiftTracker {
     Logger.recordOutput("AllianceShift/NextActive", shiftState.nextActiveAlliance.displayName);
     Logger.recordOutput("AllianceShift/SecondsToNextShift", shiftState.secondsToNextShift);
     Logger.recordOutput("AllianceShift/MyAlliance", formatAlliance(myAlliance));
-    Logger.recordOutput(
-        "AllianceShift/IsMyAllianceActive", formatAllianceActivity(isMyAllianceActive));
+    Logger.recordOutput("AllianceShift/IsMyAllianceActive", formatAllianceActivity(isMyAllianceActive));
   }
 
   private static ShiftState computeShiftState(double matchTime, AutoWinner autoWinner) {
@@ -116,34 +134,39 @@ public class AllianceShiftTracker {
       return;
     }
 
-    boolean shouldWarnEndGame =
-        shiftState.secondsToNextShift <= 15.0
-            && shiftState.secondsToNextShift > 0.0
-            && "Endgame".equals(shiftState.phaseName);
+    boolean shouldWarnEndGame = 
+      shiftState.secondsToNextShift <= 15.0 &&
+      shiftState.secondsToNextShift > 0.0 &&
+      "Endgame".equals(shiftState.phaseName);
 
-    boolean shouldWarnShift =
+     boolean shouldWarnShift =
         shiftState.secondsToNextShift > 0.0 && shiftState.secondsToNextShift <= 6.0;
 
     if (shouldWarnEndGame && warnedShiftPhases.add(shiftState.phaseName)) {
-      commandScheduler.schedule(haptics[0].endGame(), haptics[1].endGame());
+      commandScheduler.schedule( 
+        haptics[0].endGame(),
+        haptics[1].endGame());
       return;
     }
 
     if (shouldWarnShift && warnedShiftPhases.add(shiftState.phaseName)) {
       System.out.println(shiftState.phaseName);
-      if ("Shift 4".equals(shiftState.phaseName)) {
-        commandScheduler.schedule(
-            haptics[0].shiftChangeToMyAlliance(), haptics[1].shiftChangeToMyAlliance());
+      if("Shift 4".equals(shiftState.phaseName)) {
+        commandScheduler.schedule( 
+        haptics[0].shiftChangeToMyAlliance(),
+        haptics[1].shiftChangeToMyAlliance());
         return;
       }
       if (!isMyAllianceActive) {
-        commandScheduler.schedule(
-            haptics[0].shiftChangeToMyAlliance(), haptics[1].shiftChangeToMyAlliance());
+        commandScheduler.schedule( 
+        haptics[0].shiftChangeToMyAlliance(),
+        haptics[1].shiftChangeToMyAlliance());
         return;
       }
       if (isMyAllianceActive) {
-        commandScheduler.schedule(
-            haptics[0].shiftChangeOutOfMyAlliance(), haptics[1].shiftChangeOutOfMyAlliance());
+        commandScheduler.schedule( 
+        haptics[0].shiftChangeOutOfMyAlliance(),
+        haptics[1].shiftChangeOutOfMyAlliance());
         return;
       }
     }
