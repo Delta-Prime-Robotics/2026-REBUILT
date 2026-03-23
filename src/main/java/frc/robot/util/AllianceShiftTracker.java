@@ -26,6 +26,8 @@ public class AllianceShiftTracker {
       TRANSITION_DURATION + (SHIFT_DURATION * SHIFT_COUNT) + ENDGAME_DURATION;
 
   private AutoWinner latchedAutoWinner = AutoWinner.UNKNOWN;
+  private Optional<Alliance> myAlliance;
+  private boolean isMyAllianceActive = false;
   private Haptics[] haptics;
 
   private final Set<String> warnedShiftPhases = new HashSet<>();
@@ -38,7 +40,7 @@ public class AllianceShiftTracker {
 
   public void update() {
     double matchTime = DriverStation.getMatchTime();
-    Optional<Alliance> myAlliance = DriverStation.getAlliance();
+    myAlliance = DriverStation.getAlliance();
     if (DriverStation.isDisabled() && matchTime <= 0) {
       latchedAutoWinner = AutoWinner.UNKNOWN;
       warnedShiftPhases.clear();
@@ -47,7 +49,7 @@ public class AllianceShiftTracker {
 
     ShiftState shiftState = computeShiftState(matchTime, autoWinner);
     maybeRunShiftWarning(shiftState);
-    boolean isMyAllianceActive =
+    isMyAllianceActive =
         myAlliance.map(alliance -> shiftState.activeAlliance.isActiveFor(alliance)).orElse(false);
 
     Logger.recordOutput("AllianceShift/MatchTimeRemaining", matchTime);
@@ -57,7 +59,8 @@ public class AllianceShiftTracker {
     Logger.recordOutput("AllianceShift/NextActive", shiftState.nextActiveAlliance.displayName);
     Logger.recordOutput("AllianceShift/SecondsToNextShift", shiftState.secondsToNextShift);
     Logger.recordOutput("AllianceShift/MyAlliance", formatAlliance(myAlliance));
-    Logger.recordOutput("AllianceShift/IsMyAllianceActive", isMyAllianceActive);
+    Logger.recordOutput(
+        "AllianceShift/IsMyAllianceActive", formatAllianceActivity(isMyAllianceActive));
   }
 
   private static ShiftState computeShiftState(double matchTime, AutoWinner autoWinner) {
@@ -111,14 +114,28 @@ public class AllianceShiftTracker {
       return;
     }
 
+    
+    if((shiftState.phaseName == "Endgame") 
+    && (shiftState.secondsToNextShift <= 15.0) 
+    && (shiftState.secondsToNextShift > 0.0) 
+    && warnedShiftPhases.add(shiftState.phaseName)){
+      System.out.print("I am runing");
+      haptics[0].endGame().schedule();
+      haptics[1].endGame().schedule();
+      return;
+    }
+
     boolean shouldWarn =
-        shiftState.secondsToNextShift > 0.0
-            && shiftState.secondsToNextShift <= 5.0
-            && shiftState.nextActiveAlliance != ActiveAlliance.BLUE;
+        shiftState.secondsToNextShift > 0.0 && shiftState.secondsToNextShift <= 5.0;
 
     if (shouldWarn && warnedShiftPhases.add(shiftState.phaseName)) {
-      for (Haptics haptic : this.haptics) {
-        haptic.shiftChangeIn5Command();
+      if (!isMyAllianceActive) {
+        haptics[0].shiftChangeToMyAlliance().schedule();
+        haptics[1].shiftChangeToMyAlliance().schedule();
+      }
+      if (isMyAllianceActive) {
+        haptics[0].shiftChangeOutOfMyAlliance().schedule();
+        haptics[1].shiftChangeOutOfMyAlliance().schedule();
       }
     }
   }
@@ -156,6 +173,10 @@ public class AllianceShiftTracker {
 
   private static String formatAlliance(Alliance alliance) {
     return alliance == Alliance.Blue ? "Blue" : "Red";
+  }
+
+  private static String formatAllianceActivity(boolean isMyAllianceActive) {
+    return isMyAllianceActive ? "SHOOOOOT" : "DO NOT SHOOT";
   }
 
   private enum AutoWinner {

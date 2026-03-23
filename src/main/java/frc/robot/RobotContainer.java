@@ -215,7 +215,8 @@ public class RobotContainer {
     operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
 
     // flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
-    driverController.povDown().onTrue(driverHaptics.shiftChangeIn5Command());
+    driverController.povDown().onTrue(driverHaptics.shiftChangeOutOfMyAlliance());
+    driverController.povUp().onTrue(driverHaptics.shiftChangeToMyAlliance());
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
     // operatorController

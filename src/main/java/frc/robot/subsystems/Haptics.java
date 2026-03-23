@@ -87,24 +87,23 @@ public class Haptics extends SubsystemBase {
   }
 
   /**
-   * Turns a buzz on and off for a durtaion of time. Time inbetween buzzes is the buzzTime / 3
+   * Turns a buzz on and off for a durtaion of time.
    *
    * @param buzz buzz stregnth
    * @param type type of buzz ((left, heavy), (middle,medium), (right, light))
    * @param buzzTime duration of buzz
    * @param totalTime total duration of pattern
    */
-  public Command onOffBuzzRepeat(double buzz, RumbleType type, double buzzTime, double totalTime) {
-    double less = buzzTime / 3;
+  public Command onOffBuzzRepeat(
+      double buzz, RumbleType type, double buzzTime, double noBuzzTime, double totalTime) {
     return new RepeatCommand(
-            buzzFor(buzz, type, buzzTime).andThen(Commands.waitSeconds(buzzTime - less)))
+            buzzFor(buzz, type, buzzTime).andThen(Commands.waitSeconds(noBuzzTime)))
         .withTimeout(totalTime)
         .finallyDo(() -> stopBuzzing(type));
   }
 
   /**
    * Turns the heavy and light buzz on and off for a durtaion of time. Time in between buzzes is the
-   * buzzTime / 3
    *
    * @param lightBuzz buzz stregnth for the light buzz
    * @param heavyBuzz buzz stregth for the heavy buzz
@@ -112,17 +111,14 @@ public class Haptics extends SubsystemBase {
    * @param totalTime total duration of pattern
    */
   public Command onOffVarBuzzRepeat(
-      double lightbuzz, double heavyBuzz, double buzzTime, double totalTime) {
-    double less = buzzTime / 3;
-    return new RepeatCommand(buzzVarBothFor(lightbuzz, heavyBuzz, buzzTime))
-        .andThen(Commands.waitSeconds(buzzTime - less))
+      double lightbuzz, double heavyBuzz, double buzzTime, double noBuzzTime, double totalTime) {
+    return new RepeatCommand(buzzVarBothFor(lightbuzz, heavyBuzz, buzzTime).andThen(Commands.waitSeconds(noBuzzTime)))
         .withTimeout(totalTime)
         .finallyDo(() -> stopBuzzing(kMedium));
   }
 
   /**
-   * Alternates between the light and heavy buzz for a duration of time. Time in between the
-   * diffrent buzzes is the buzzTime / 3
+   * Alternates between the light and heavy buzz for a duration of time.
    *
    * @param lightBuzz buzz stregnth for the light buzz
    * @param heavyBuzz buzz stregth for the heavy buzz
@@ -130,20 +126,31 @@ public class Haptics extends SubsystemBase {
    * @param totalTime total duration of pattern
    */
   public Command alternatingBuzzRepeat(
-      double lightbuzz, double heavyBuzz, double buzzTime, double totalTime) {
-    double less = buzzTime / 3;
+      double lightbuzz, double heavyBuzz, double buzzTime, double noBuzzTime, double totalTime) {
     return new RepeatCommand(
             buzzFor(lightbuzz, kLight, buzzTime)
-                .andThen(Commands.waitSeconds(less))
-                .andThen(buzzFor(heavyBuzz, kHeavy, buzzTime)))
-        .andThen(Commands.waitSeconds(less))
+                .andThen(Commands.waitSeconds(noBuzzTime))
+                .andThen(buzzFor(heavyBuzz, kHeavy, buzzTime))
+                .andThen(Commands.waitSeconds(noBuzzTime)))
         .withTimeout(totalTime)
         .finallyDo(() -> stopBuzzing(kMedium));
   }
 
-  public Command shiftChangeIn5Command() {
-    return onOffBuzzRepeat(0.5, RumbleType.kBothRumble, 1, 5)
-        .andThen(Commands.waitSeconds(0.1))
-        .andThen(buzzFor(0.8, RumbleType.kRightRumble, 0.5));
+  public Command shiftChangeToMyAlliance() {
+    return onOffBuzzRepeat(0.6, RumbleType.kBothRumble, 0.1, 0.1, 1)
+        .andThen(onOffBuzzRepeat(0.5, RumbleType.kBothRumble, 0.5, 0.5, 5));
+        // .andThen(Commands.waitSeconds(0.5))
+        // .andThen(buzzFor(0.8, RumbleType.kBothRumble, 0.2));
+  }
+
+  public Command shiftChangeOutOfMyAlliance() {
+    return onOffBuzzRepeat(0.6, RumbleType.kBothRumble, 0.1, 0.1, 1)
+        .andThen(Commands.waitSeconds(3))
+        .andThen(alternatingBuzzRepeat(0.7, 0.7, 0.2, 0.1, 1.5));
+  }
+
+  public Command endGame() {
+    return onOffBuzzRepeat(0.6, RumbleType.kBothRumble, 0.1, 0.1, 1)
+        .andThen(onOffBuzzRepeat(0.4, RumbleType.kBothRumble, 0.5, 0.5, 15));
   }
 }
