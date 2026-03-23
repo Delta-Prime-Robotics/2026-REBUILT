@@ -9,6 +9,7 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Haptics;
 import java.util.HashSet;
 import java.util.Locale;
@@ -29,6 +30,7 @@ public class AllianceShiftTracker {
   private Optional<Alliance> myAlliance;
   private boolean isMyAllianceActive = false;
   private Haptics[] haptics;
+  private CommandScheduler commandScheduler = CommandScheduler.getInstance();
 
   private final Set<String> warnedShiftPhases = new HashSet<>();
 
@@ -114,28 +116,35 @@ public class AllianceShiftTracker {
       return;
     }
 
-    
-    if((shiftState.phaseName == "Endgame") 
-    && (shiftState.secondsToNextShift <= 15.0) 
-    && (shiftState.secondsToNextShift > 0.0) 
-    && warnedShiftPhases.add(shiftState.phaseName)){
-      System.out.print("I am runing");
-      haptics[0].endGame().schedule();
-      haptics[1].endGame().schedule();
+    boolean shouldWarnEndGame =
+        shiftState.secondsToNextShift <= 15.0
+            && shiftState.secondsToNextShift > 0.0
+            && "Endgame".equals(shiftState.phaseName);
+
+    boolean shouldWarnShift =
+        shiftState.secondsToNextShift > 0.0 && shiftState.secondsToNextShift <= 6.0;
+
+    if (shouldWarnEndGame && warnedShiftPhases.add(shiftState.phaseName)) {
+      commandScheduler.schedule(haptics[0].endGame(), haptics[1].endGame());
       return;
     }
 
-    boolean shouldWarn =
-        shiftState.secondsToNextShift > 0.0 && shiftState.secondsToNextShift <= 5.0;
-
-    if (shouldWarn && warnedShiftPhases.add(shiftState.phaseName)) {
+    if (shouldWarnShift && warnedShiftPhases.add(shiftState.phaseName)) {
+      System.out.println(shiftState.phaseName);
+      if ("Shift 4".equals(shiftState.phaseName)) {
+        commandScheduler.schedule(
+            haptics[0].shiftChangeToMyAlliance(), haptics[1].shiftChangeToMyAlliance());
+        return;
+      }
       if (!isMyAllianceActive) {
-        haptics[0].shiftChangeToMyAlliance().schedule();
-        haptics[1].shiftChangeToMyAlliance().schedule();
+        commandScheduler.schedule(
+            haptics[0].shiftChangeToMyAlliance(), haptics[1].shiftChangeToMyAlliance());
+        return;
       }
       if (isMyAllianceActive) {
-        haptics[0].shiftChangeOutOfMyAlliance().schedule();
-        haptics[1].shiftChangeOutOfMyAlliance().schedule();
+        commandScheduler.schedule(
+            haptics[0].shiftChangeOutOfMyAlliance(), haptics[1].shiftChangeOutOfMyAlliance());
+        return;
       }
     }
   }
