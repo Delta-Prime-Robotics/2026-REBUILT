@@ -176,7 +176,7 @@ public class RobotContainer {
     //             () -> -driverController.getLeftY(),
     //             () ->
     //                 -driverController
-    //                     .getLeftX())); 
+    //                     .getLeftX()));
     // to-do, maybe create constant for these field coords
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
@@ -214,7 +214,8 @@ public class RobotContainer {
 
     operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
 
-    flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
+    // flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
+    driverController.povDown().onTrue(driverHaptics.shiftChangeIn5Command());
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
     // operatorController
