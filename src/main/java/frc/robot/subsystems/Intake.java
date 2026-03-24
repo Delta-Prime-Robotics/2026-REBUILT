@@ -45,18 +45,24 @@ public class Intake extends SubsystemBase {
   private final SparkClosedLoopController m_leftArmController;
 
   public static IntakeState currentIntakeState = IntakeState.STOWED;
-  public static double m_armPose = 0.0; // 0 to 1, where 0 is stowed and 1 is fully extended
 
   static {
-    m_intakeConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(60);
+    //Intake Config
+    m_intakeConfig
+      .idleMode(IdleMode.kCoast)
+      .smartCurrentLimit(60)
+      .closedLoop
+      .pid(0,0,0);
 
+    //Arm config
     m_rightArmConfig
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
-        .inverted(false);
+        .inverted(true);
 
     m_leftArmConfig.apply(m_rightArmConfig);
 
+    // Right Arm Config
     m_rightArmConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -69,7 +75,9 @@ public class Intake extends SubsystemBase {
         .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
     m_rightArmConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
 
-    m_rightArmConfig
+    //Left Arm Config
+    m_leftArmConfig
+        .inverted(false)
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(0.04, 0.0, 0.0)
@@ -79,7 +87,7 @@ public class Intake extends SubsystemBase {
         .maxMotion
         .cruiseVelocity(0.0)
         .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
-    m_rightArmConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
+    m_leftArmConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
 
     // m_armConfig
     //     .absoluteEncoder
@@ -108,10 +116,14 @@ public class Intake extends SubsystemBase {
     m_leftArmEncoder = m_leftArm.getEncoder();
   }
 
-  @AutoLogOutput(key = "Intake/ArmAngle")
-  public double getArmAngleZeroToOne() {
-    return m_armPose;
-    // return m_armEncoder.getPosition();
+  @AutoLogOutput(key = "Intake/LeftArmAngle")
+  public double getLeftArmAngle() {
+    return m_leftArmEncoder.getPosition();
+  }
+
+  @AutoLogOutput(key = "Intake/RightArmAngle")
+  public double getRightArmAngle() {
+    return m_rightArmEncoder.getPosition();
   }
 
   @AutoLogOutput(key = "Intake/State")
@@ -129,17 +141,33 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput("Intake/IntakeSpeed", 0);
   }
 
-  private void setArmSpeed(double speed) {
+  private void setLeftArmSpeed(double speed) {
     double outSpeed = 0.0;
-    Logger.recordOutput("Intake/IntakeSpeed", speed);
-    if ((getArmAngleZeroToOne() > IntakeConstants.kArmMinAngle)
-        && (getArmAngleZeroToOne() < IntakeConstants.kArmMaxAngle)) {
+    Logger.recordOutput("Intake/ArmSpeed", speed);
+    if ((getLeftArmAngle() > IntakeConstants.kArmMinAngle)
+        && (getLeftArmAngle() < IntakeConstants.kArmMaxAngle)) {
       outSpeed = speed;
     } else {
       outSpeed = 0.0;
     }
+    m_leftArm.set(outSpeed);
+  }
 
+  private void setRightArmSpeed(double speed) {
+    double outSpeed = 0.0;
+    Logger.recordOutput("Intake/ArmSpeed", speed);
+    if ((getRightArmAngle() > IntakeConstants.kArmMinAngle)
+        && (getRightArmAngle() < IntakeConstants.kArmMaxAngle)) {
+      outSpeed = speed;
+    } else {
+      outSpeed = 0.0;
+    }
     m_rightArm.set(outSpeed);
+  }
+
+  private void setArmSpeeds(double speed) {
+    setLeftArmSpeed(speed);
+    setRightArmSpeed(speed);
   }
 
   private void stopArm() {

@@ -204,19 +204,15 @@ public class FlywheelShooter extends SubsystemBase {
     return this.runEnd(() -> m_shooterLeader.set(speed), () -> stopShooter());
   }
 
-  public Command runWithSmartDashboardSetpointCommand() {
-    double setpoint = 0;
-    return runAtRPMSCommand(setpoint);
-  }
+  // @Override
+  // public void periodic() {
 
-  @Override
-  public void periodic() {
+  //   if (smartdashboardSetpoint != SmartDashboard.getNumber("ShooterSetpoint", 0)) {
+  //     smartdashboardSetpoint = SmartDashboard.getNumber("ShooterSetpoint", 0);
+  //     System.out.println("Shooter Setpoint" + smartdashboardSetpoint);
+  //     runAtRPMSCommand(smartdashboardSetpoint).withTimeout(10);
+  //   }
 
-    if (smartdashboardSetpoint != SmartDashboard.getNumber("ShooterSetpoint", 0)) {
-      smartdashboardSetpoint = SmartDashboard.getNumber("ShooterSetpoint", 0);
-      System.out.println("Shooter Setpoint" + smartdashboardSetpoint);
-    }
-
-    // This method will be called once per scheduler run
-  }
+  //   // This method will be called once per scheduler run
+  // }
 }

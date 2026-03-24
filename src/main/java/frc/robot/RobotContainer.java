@@ -23,6 +23,7 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.Constants;
 import frc.robot.constants.FieldConstants;
+import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.subsystems.BeltNado;
 import frc.robot.subsystems.FlywheelShooter;
 import frc.robot.subsystems.Intake;
@@ -152,7 +153,7 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
-    // Lock to 45° when A button is held
+    // Lock to 45° when B button is held
     // to go over bumps
     driverController
         .b()
@@ -207,14 +208,12 @@ public class RobotContainer {
     //     intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3200));
+    driverController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3200));
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
-    operatorController
-        .rightBumper()
-        .whileTrue(flywheelShooter.runWithSmartDashboardSetpointCommand());
+    driverController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
 
-    operatorController.leftTrigger().whileTrue(intake.runIntake(-0.6));
-    operatorController.povDown().whileTrue(intake.runIntake(0.2));
+    driverController.leftTrigger().whileTrue(intake.runIntake(IntakeConstants.kIntakeSpeed));
+    driverController.povDown().whileTrue(intake.runIntake(IntakeConstants.kOuttakeSpeed));
     // operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
     // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
