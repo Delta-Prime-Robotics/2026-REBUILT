@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.Constants;
-import frc.robot.constants.Constants.IntakeConstants.IntakeState;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.BeltNado;
 import frc.robot.subsystems.FlywheelShooter;
@@ -202,22 +201,22 @@ public class RobotContainer {
     operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
     operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.6, -0.6));
 
-    operatorController
-        .x()
-        .whileTrue(
-            beltNado
-                .runMotorCommand(0.75)
-                .alongWith(intake.runArmToIntakeState(IntakeState.THRUSTING)))
-        .onFalse(
-            intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
+    operatorController.x().whileTrue(beltNado.runMotorCommand(0.75));
+    //         .alongWith(intake.runArmToIntakeState(IntakeState.THRUSTING)))
+    // .onFalse(
+    //     intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    // operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
-    operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
+    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3200));
+    // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
     operatorController
-        .leftTrigger()
-        .whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING))
-        .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
+        .rightBumper()
+        .whileTrue(flywheelShooter.runWithSmartDashboardSetpointCommand());
+
+    operatorController.leftTrigger().whileTrue(intake.runIntake(-0.6));
+    operatorController.povDown().whileTrue(intake.runIntake(0.2));
+    // operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
+    // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
     // flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
 

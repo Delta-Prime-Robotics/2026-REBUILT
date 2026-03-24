@@ -5,10 +5,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
@@ -36,25 +36,30 @@ public class Intake extends SubsystemBase {
   private final SparkMax m_rightArm; // NEO
 
   private static SparkFlexConfig m_intakeConfig = new SparkFlexConfig();
-  private static SparkMaxConfig m_armConfig = new SparkMaxConfig();
+  private static SparkMaxConfig m_rightArmConfig = new SparkMaxConfig();
+  private static SparkMaxConfig m_leftArmConfig = new SparkMaxConfig();
 
-  private final SparkAbsoluteEncoder m_armEncoder;
-  private final SparkClosedLoopController m_armController;
+  private final RelativeEncoder m_rightArmEncoder;
+  private final RelativeEncoder m_leftArmEncoder;
+  private final SparkClosedLoopController m_rightArmController;
+  private final SparkClosedLoopController m_leftArmController;
 
   public static IntakeState currentIntakeState = IntakeState.STOWED;
   public static double m_armPose = 0.0; // 0 to 1, where 0 is stowed and 1 is fully extended
 
   static {
-    m_intakeConfig
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(MotorConstants.kVortexSmartCurrentLimit);
+    m_intakeConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(60);
 
-    m_armConfig
+    m_rightArmConfig
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
-        .inverted(false)
+        .inverted(false);
+
+    m_leftArmConfig.apply(m_rightArmConfig);
+
+    m_rightArmConfig
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(0.04, 0.0, 0.0)
         .allowedClosedLoopError(1, ClosedLoopSlot.kSlot0)
         .positionWrappingEnabled(false)
@@ -62,13 +67,25 @@ public class Intake extends SubsystemBase {
         .maxMotion
         .cruiseVelocity(0.0)
         .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
+    m_rightArmConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
 
-    m_armConfig
-        .absoluteEncoder
-        .inverted(true)
-        .positionConversionFactor(75); // 5:1, 5:1, 75:1 Encoder on finalShaft
+    m_rightArmConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(0.04, 0.0, 0.0)
+        .allowedClosedLoopError(1, ClosedLoopSlot.kSlot0)
+        .positionWrappingEnabled(false)
+        .positionWrappingInputRange(IntakeConstants.kArmMinAngle, IntakeConstants.kArmMaxAngle)
+        .maxMotion
+        .cruiseVelocity(0.0)
+        .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
+    m_rightArmConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
 
-    m_armConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
+    // m_armConfig
+    //     .absoluteEncoder
+    //     .inverted(true)
+    //     .positionConversionFactor(75); // 5:1, 5:1, 75:1 Encoder on finalShaft
+
   }
 
   /** Creates a new Intake. */
@@ -80,15 +97,15 @@ public class Intake extends SubsystemBase {
     m_intake.configure(
         m_intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_leftArm.configure(
-        m_armConfig.follow(CanIdsOtherThanDrive.kLeftArmId, true),
-        ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+        m_leftArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     m_rightArm.configure(
-        m_armConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        m_rightArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    m_armController = m_rightArm.getClosedLoopController();
+    m_rightArmController = m_rightArm.getClosedLoopController();
+    m_leftArmController = m_leftArm.getClosedLoopController();
 
-    m_armEncoder = m_rightArm.getAbsoluteEncoder();
+    m_rightArmEncoder = m_rightArm.getEncoder();
+    m_leftArmEncoder = m_leftArm.getEncoder();
   }
 
   @AutoLogOutput(key = "Intake/ArmAngle")
@@ -134,35 +151,47 @@ public class Intake extends SubsystemBase {
     setpointDeg =
         MathUtil.clamp(setpointDeg, IntakeConstants.kArmMinAngle, IntakeConstants.kArmMaxAngle);
     Logger.recordOutput("Intake/ArmSetpoint", setpointDeg);
-    m_armController.setSetpoint(setpointDeg, ControlType.kMAXMotionPositionControl);
+    m_leftArmController.setSetpoint(setpointDeg, ControlType.kPosition);
+    m_rightArmController.setSetpoint(setpointDeg, ControlType.kPosition);
+  }
+
+  private void setArmSetpointAndIntake(double armSetpoint, double intakeSpeed) {
+    setArmSetpoint(armSetpoint);
+    setIntakeSpeed(intakeSpeed);
   }
 
   @AutoLogOutput(key = "Intake/isArmAtSetPoint")
-  public boolean isArmAtSetpoint() {
-    return m_armController.isAtSetpoint();
+  public boolean isArmsAtSetpoint() {
+    return m_leftArmController.isAtSetpoint() && m_rightArmController.isAtSetpoint();
   }
 
   public Command runIntake(double speed) {
     return this.runEnd(() -> setIntakeSpeed(speed), () -> stopIntake());
   }
 
-  public Command runArmToAngle(double armPosZeroToOne) {
-    return Commands.runOnce(() -> setArmSetpoint(armPosZeroToOne), this)
-        .andThen(
-            Commands.waitUntil(this::isArmAtSetpoint)
-                .alongWith(
-                    Commands.waitSeconds(0.25)
-                        .andThen(
-                            runOnce(
-                                () -> {
-                                  m_armPose = armPosZeroToOne;
-                                }))))
-        .finallyDo(interrupted -> stopArm());
+  public Command runArmToAngleAndIntake(double armPosZeroToOne, double intakeSpeed) {
+    return Commands.runOnce(() -> setArmSetpointAndIntake(armPosZeroToOne, intakeSpeed), this)
+        .andThen(Commands.waitUntil(this::isArmsAtSetpoint))
+        // .alongWith(
+        //     Commands.waitSeconds(0.25)
+        //         .andThen(
+        //             runOnce(
+        //                 () -> {
+        //                   m_armPose = armPosZeroToOne;
+        //                 }))))
+        .finallyDo(
+            () -> {
+              stopArm();
+              stopIntake();
+            });
   }
 
   public Command thrustingCommand() {
-    return this.runArmToAngle(IntakeConstants.kArmThrustInwardPosition)
-        .andThen(this.runArmToAngle(IntakeConstants.kArmThrustOutwardPosition))
+    return this.runArmToAngleAndIntake(
+            IntakeConstants.kArmThrustInwardPosition, IntakeConstants.kStopSpeed)
+        .andThen(
+            this.runArmToAngleAndIntake(
+                IntakeConstants.kArmThrustOutwardPosition, IntakeConstants.kStopSpeed))
         .finallyDo(
             () -> {
               stopArm();
@@ -172,8 +201,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command intakingCommand(double speed) {
-    return this.runArmToAngle(IntakeConstants.kArmIntakePosition)
-        .alongWith(Commands.run(() -> setIntakeSpeed(speed)))
+    return this.runArmToAngleAndIntake(IntakeConstants.kArmIntakePosition, speed)
         .finallyDo(
             () -> {
               stopArm();
@@ -183,18 +211,22 @@ public class Intake extends SubsystemBase {
   }
 
   public Command stowingCommand() {
-    return Commands.sequence(
-            Commands.runOnce(this::stopIntake, this),
-            this.runArmToAngle(IntakeConstants.kArmStowPosition))
+    return this.runArmToAngleAndIntake(
+            IntakeConstants.kArmStowPosition, IntakeConstants.kIntakeSpeed)
+        .finallyDo(
+            () -> {
+              stopArm();
+              stopIntake();
+            })
         .beforeStarting(() -> currentIntakeState = IntakeState.STOWED);
   }
 
   public Command runArmToIntakeState(IntakeState intakeState) {
     switch (intakeState) {
       case INTAKING:
-        return intakingCommand(0.75);
+        return intakingCommand(IntakeConstants.kIntakeSpeed);
       case OUTTAKING:
-        return intakingCommand(-0.75);
+        return intakingCommand(IntakeConstants.kOuttakeSpeed);
       case STOWED:
         return stowingCommand();
       case THRUSTING:

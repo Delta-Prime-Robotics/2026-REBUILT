@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
@@ -37,7 +38,7 @@ public class FlywheelShooter extends SubsystemBase {
 
   private static final double kShooterMaxRPM =
       Constants.MotorConstants.kVortexFreeSpeedRpm; // NEO free speed RPM
-  private static final double kShooterAllowableErrorRPM = 50.0; // RPM //To-Do: tune this value
+  private static final double kShooterAllowableErrorRPM = 1; // RPM //To-Do: tune this value
 
   // Distance in meters -> shooter RPM. Tune these points from on-field data.
   private static final InterpolatingDoubleTreeMap kShooterDistanceToRpmMap =
@@ -45,16 +46,17 @@ public class FlywheelShooter extends SubsystemBase {
 
   private static final double kMinCalibratedDistanceMeters = 1.2;
   private static final double kMaxCalibratedDistanceMeters = 6.0;
+  private static double smartdashboardSetpoint = 0.0;
 
   // static configuration block
   static {
     kShooterDistanceToRpmMap.put(1.2, 2600.0);
     kShooterDistanceToRpmMap.put(1.8, 3000.0);
-    kShooterDistanceToRpmMap.put(2.4, 3400.0);
-    kShooterDistanceToRpmMap.put(3.0, 3800.0);
-    kShooterDistanceToRpmMap.put(3.6, 4200.0);
-    kShooterDistanceToRpmMap.put(4.5, 4700.0);
-    kShooterDistanceToRpmMap.put(6.0, 5300.0);
+    kShooterDistanceToRpmMap.put(2.4, 3100.0);
+    kShooterDistanceToRpmMap.put(3.1, 3200.0);
+    kShooterDistanceToRpmMap.put(3.6, 3400.0);
+    kShooterDistanceToRpmMap.put(4.5, 3600.0);
+    kShooterDistanceToRpmMap.put(6.0, 4000.0);
 
     // configure Shooter Leader
     m_leaderConfig
@@ -66,14 +68,14 @@ public class FlywheelShooter extends SubsystemBase {
     m_leaderConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(0.00003, 0.0, 0.00001)
+        .pid(0.000001, 0.0, 0.00001)
         .allowedClosedLoopError(kShooterAllowableErrorRPM, ClosedLoopSlot.kSlot0);
     // .maxMotion
     // .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
 
     m_leaderConfig.closedLoop.feedForward.sva(
         0.34, // ks(volts)
-        0.00167, // kv(volts per motor rpm)
+        0.00166, // kv(volts per motor rpm)
         0.0 // ka(volts per motor rpm squared)
         );
 
@@ -106,6 +108,7 @@ public class FlywheelShooter extends SubsystemBase {
     // m_shooterFollower.setCANTimeout(10);
 
     m_ClosedLoopController = m_shooterLeader.getClosedLoopController();
+    SmartDashboard.putNumber("ShooterSetpoint", 0);
   }
 
   /**
@@ -201,8 +204,19 @@ public class FlywheelShooter extends SubsystemBase {
     return this.runEnd(() -> m_shooterLeader.set(speed), () -> stopShooter());
   }
 
-  // @Override
-  // public void periodic() {
-  //   // This method will be called once per scheduler run
-  // }
+  public Command runWithSmartDashboardSetpointCommand() {
+    double setpoint = 0;
+    return runAtRPMSCommand(setpoint);
+  }
+
+  @Override
+  public void periodic() {
+
+    if (smartdashboardSetpoint != SmartDashboard.getNumber("ShooterSetpoint", 0)) {
+      smartdashboardSetpoint = SmartDashboard.getNumber("ShooterSetpoint", 0);
+      System.out.println("Shooter Setpoint" + smartdashboardSetpoint);
+    }
+
+    // This method will be called once per scheduler run
+  }
 }
