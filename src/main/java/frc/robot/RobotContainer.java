@@ -23,10 +23,12 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.IntakeConstants;
+import frc.robot.constants.Constants.IntakeConstants.IntakeState;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.BeltNado;
 import frc.robot.subsystems.FlywheelShooter;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeArms;
 import frc.robot.subsystems.Kickdexer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -55,6 +57,7 @@ public class RobotContainer {
   private final Kickdexer kickdexer = new Kickdexer();
   private final BeltNado beltNado = new BeltNado();
   private final Intake intake = new Intake();
+  private final IntakeArms intakeArms = new IntakeArms();
   private final AutoCommands autoCommands = new AutoCommands(kickdexer, beltNado, flywheelShooter);
 
   // Controller
@@ -212,8 +215,8 @@ public class RobotContainer {
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
     driverController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
 
-    driverController.leftTrigger().whileTrue(intake.runIntake(IntakeConstants.kIntakeSpeed));
-    driverController.povDown().whileTrue(intake.runIntake(IntakeConstants.kOuttakeSpeed));
+    operatorController.leftTrigger().whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
+    operatorController.povDown().whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kOuttakeSpeed));
     // operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
     // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
@@ -237,6 +240,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter());
     NamedCommands.registerCommand(
         "WindUpShooterWithTimeout", autoCommands.windUpShooter().withTimeout(1));
+    NamedCommands.registerCommand("IntakeDown", intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING));
+    NamedCommands.registerCommand("IntakeFuelWithTimeout", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
+    NamedCommands.registerCommand("StowIntake", 
+      intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED)
+      .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
+      .finallyDo(()-> intake.stopIntake()));
   }
 
   public void setDriveCharacterizationCommands() {
