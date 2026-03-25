@@ -47,14 +47,10 @@ public class Intake extends SubsystemBase {
   public static IntakeState currentIntakeState = IntakeState.STOWED;
 
   static {
-    //Intake Config
-    m_intakeConfig
-      .idleMode(IdleMode.kCoast)
-      .smartCurrentLimit(60)
-      .closedLoop
-      .pid(0,0,0);
+    // Intake Config
+    m_intakeConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(60).closedLoop.pid(0, 0, 0);
 
-    //Arm config
+    // Arm config
     m_rightArmConfig
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(MotorConstants.kNeoSmartCurrentLimit)
@@ -75,7 +71,7 @@ public class Intake extends SubsystemBase {
         .maxAcceleration(0.0, ClosedLoopSlot.kSlot0); // rpm per second
     m_rightArmConfig.closedLoop.feedForward.svacr(0.015, 0, 0, 0, 0);
 
-    //Left Arm Config
+    // Left Arm Config
     m_leftArmConfig
         .inverted(false)
         .closedLoop

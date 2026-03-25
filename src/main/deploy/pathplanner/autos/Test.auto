@@ -5,15 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "TopShoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WindUpShooter"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "TopShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "WindUpShooter"
+                }
+              }
+            ]
           }
         },
         {

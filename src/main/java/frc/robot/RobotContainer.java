@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.Constants;
-import frc.robot.constants.FieldConstants;
 import frc.robot.constants.Constants.IntakeConstants;
+import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.BeltNado;
 import frc.robot.subsystems.FlywheelShooter;
 import frc.robot.subsystems.Intake;
@@ -208,7 +208,7 @@ public class RobotContainer {
     //     intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    driverController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3200));
+    driverController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(500));
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
     driverController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
 
@@ -231,10 +231,12 @@ public class RobotContainer {
   }
 
   public void addNamedAutoCommands() {
-    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter());
-    NamedCommands.registerCommand("Shoot", flywheelShooter.runAtRPMSCommand(3000).withTimeout(5));
+    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooterForSec(5));
+    NamedCommands.registerCommand("Shoot", autoCommands.shootForSec(5));
     // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
-    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter().withTimeout(1));
+    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter());
+    NamedCommands.registerCommand(
+        "WindUpShooterWithTimeout", autoCommands.windUpShooter().withTimeout(1));
   }
 
   public void setDriveCharacterizationCommands() {
