@@ -1,0 +1,89 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.4697574893009984,
+        "y": 5.904636233951498
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.404447262832137,
+        "y": 6.057151625443319
+      },
+      "isLocked": true,
+      "linkedName": "Top Shoot Bump"
+    },
+    {
+      "anchor": {
+        "x": 0.921,
+        "y": 5.969329529243937
+      },
+      "prevControl": {
+        "x": 0.6645534780542018,
+        "y": 5.9676897410884395
+      },
+      "nextControl": {
+        "x": 1.237897901927079,
+        "y": 5.971355859810401
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3995720399429386,
+        "y": 5.969329529243937
+      },
+      "prevControl": {
+        "x": 1.6472625262988363,
+        "y": 5.935426388257019
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "End Depo"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6012793176972232,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Slow to Intake",
+      "minWaypointRelativePos": 1.204591492234979,
+      "maxWaypointRelativePos": 1.5557056043214113,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -61.928
+  },
+  "useDefaultConstraints": true
+}
