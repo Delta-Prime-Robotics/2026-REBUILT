@@ -27,9 +27,17 @@ public class AutoCommands {
             m_kickdexer.runKickdexerForward(), m_beltNado.runMotorCommand(0.75))
         .withTimeout(seconds);
   }
+  public Command feedShooter() {
+    return new ParallelCommandGroup(
+            m_kickdexer.runKickdexerForward(), m_beltNado.runMotorCommand(0.75));
+  }
 
   public Command shootForSec(double seconds) {
     return m_shooter.runAtRPMSCommand(3000).withTimeout(seconds);
+  }
+
+  public Command shoot4FtCommand() {
+    return m_shooter.runAtRPMSCommand(3000);
   }
 
   public Command windUpShooter() {

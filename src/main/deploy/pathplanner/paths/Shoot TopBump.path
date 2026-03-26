@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5862054208273886,
-        "y": 6.098716119828817
+        "x": 3.4562444444444447,
+        "y": 5.818233333333333
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9203,
-        "y": 6.0521
+        "x": 3.625545693608469,
+        "y": 5.634284734449023
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Shoot Top Bump"
     },
     {
       "anchor": {
-        "x": 2.3064,
-        "y": 5.2920333333333325
+        "x": 3.4562444444444447,
+        "y": 5.818233333333333
       },
       "prevControl": {
-        "x": 2.463485936371748,
-        "y": 5.097549378740129
+        "x": 3.2933319284195726,
+        "y": 6.040526842041797
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Shoot Top Bump"
     }
   ],
   "rotationTargets": [],
@@ -33,13 +33,13 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 4.612,
-        "y": 4.021
+        "x": 4.611624,
+        "y": 4.0213
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.4158808933002454,
+      "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Hub"
+      "name": "Point Towards Zone"
     }
   ],
   "eventMarkers": [],
@@ -53,13 +53,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -28.576283839709312
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "In Alliance Zone",
+  "folder": "Shoot In Place",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

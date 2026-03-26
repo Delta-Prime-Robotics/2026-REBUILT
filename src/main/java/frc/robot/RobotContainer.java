@@ -234,14 +234,15 @@ public class RobotContainer {
   }
 
   public void addNamedAutoCommands() {
-    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooterForSec(5));
-    NamedCommands.registerCommand("Shoot", autoCommands.shootForSec(5));
+    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter());
+    NamedCommands.registerCommand("Shoot", autoCommands.shoot4FtCommand());
+    NamedCommands.registerCommand("Auto Shoot", flywheelShooter.autoShootRange());
     // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
     NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter());
     NamedCommands.registerCommand(
         "WindUpShooterWithTimeout", autoCommands.windUpShooter().withTimeout(1));
     NamedCommands.registerCommand("IntakeDown", intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING));
-    NamedCommands.registerCommand("IntakeFuelWithTimeout", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
+    NamedCommands.registerCommand("IntakeFuel", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
     NamedCommands.registerCommand("StowIntake", 
       intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED)
       .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))

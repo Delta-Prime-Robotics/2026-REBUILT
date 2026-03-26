@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4697574893009984,
-        "y": 5.904636233951498
+        "x": 0.5326818830242506,
+        "y": 0.6644793152639101
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2200851786301423,
-        "y": 5.891840246913545
+        "x": 1.0718000086906752,
+        "y": 0.8644380846937032
       },
       "isLocked": true,
-      "linkedName": "Top Shoot Bump"
+      "linkedName": "Load Outpost"
     },
     {
       "anchor": {
-        "x": 3.4697574893009984,
-        "y": 5.904636233951498
+        "x": 1.0372895863052778,
+        "y": 0.8068045649072757
       },
       "prevControl": {
-        "x": 3.774678148598101,
-        "y": 5.934262783601836
+        "x": 0.7875665617793535,
+        "y": 0.8185693862669299
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "Top Shoot Bump"
+      "isLocked": true,
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,16 +33,23 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 4.611624,
-        "y": 4.0213
+        "x": 4.612,
+        "y": 4.021
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.0,
+      "minWaypointRelativePos": 0.6698176907494963,
       "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Zone"
+      "name": "Point Towards Hub"
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "WindUpShooter",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 1.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -53,13 +60,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -61.92751306414706
+    "rotation": 42.294273082633374
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Shoot In Place",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -61.92751306414706
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
