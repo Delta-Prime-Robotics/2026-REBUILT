@@ -203,20 +203,24 @@ public class RobotContainer {
 
     // Operator controls
     operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
-    operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.6, -0.6));
+    operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.6, -0.6)
+      .alongWith(beltNado.runMotorCommand(0.75)));
 
-    operatorController.x().whileTrue(beltNado.runMotorCommand(0.75));
     //         .alongWith(intake.runArmToIntakeState(IntakeState.THRUSTING)))
     // .onFalse(
     //     intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    driverController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(500));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(2500));
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
-    driverController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
+    operatorController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
 
-    operatorController.leftTrigger().whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
-    operatorController.povDown().whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kOuttakeSpeed));
+    operatorController
+        .leftTrigger()
+        .whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
+    operatorController
+        .povDown()
+        .whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kOuttakeSpeed));
     // operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
     // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
@@ -236,17 +240,21 @@ public class RobotContainer {
   public void addNamedAutoCommands() {
     NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter());
     NamedCommands.registerCommand("Shoot", autoCommands.shoot4FtCommand());
-    NamedCommands.registerCommand("Auto Shoot", flywheelShooter.autoShootRange());
+    NamedCommands.registerCommand("AutoShoot", flywheelShooter.autoShootRange());
     // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
     NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter());
     NamedCommands.registerCommand(
         "WindUpShooterWithTimeout", autoCommands.windUpShooter().withTimeout(1));
-    NamedCommands.registerCommand("IntakeDown", intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING));
-    NamedCommands.registerCommand("IntakeFuel", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
-    NamedCommands.registerCommand("StowIntake", 
-      intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED)
-      .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
-      .finallyDo(()-> intake.stopIntake()));
+    NamedCommands.registerCommand(
+        "IntakeDown", intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING));
+    NamedCommands.registerCommand(
+        "IntakeFuel", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
+    NamedCommands.registerCommand(
+        "StowIntake",
+        intakeArms
+            .runArmToIntakeStateCommand(IntakeState.STOWED)
+            .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
+            .finallyDo(() -> intake.stopIntake()));
   }
 
   public void setDriveCharacterizationCommands() {

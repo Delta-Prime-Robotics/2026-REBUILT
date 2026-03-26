@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.783879622803634,
-        "y": 3.9794413968076805
+        "x": 4.303217437368837,
+        "y": 3.966378675025023
       },
       "isLocked": false,
       "linkedName": "Start Hub"
     },
     {
       "anchor": {
-        "x": 3.5342000000000002,
+        "x": 2.637711111111112,
         "y": 3.966788888888888
       },
       "prevControl": {
-        "x": 3.253767212480354,
-        "y": 3.9525501555246896
+        "x": 2.387711326532709,
+        "y": 3.9671170820516983
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Start Hub"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

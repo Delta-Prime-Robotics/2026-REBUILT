@@ -175,7 +175,7 @@ public class FlywheelShooter extends SubsystemBase {
    * @param rpm The target RPM to shoot at
    */
   public Command runAtRPMSCommand(double rpm) {
-    System.out.println("Running shooter at " + rpm + " RPM");
+    // System.out.println("Running shooter at " + rpm + " RPM");
     return this.runEnd(() -> setShooterSetpoint(rpm), this::stopShooter);
   }
 

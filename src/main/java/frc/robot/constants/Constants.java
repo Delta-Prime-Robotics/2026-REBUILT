@@ -71,8 +71,8 @@ public final class Constants {
     public static final double kArmMinAngle = 0.9;
     public static final double kArmMaxAngle = 22.8;
 
-    public static final double kIntakeSpeed = 0.6;
-    public static final double kOuttakeSpeed = -0.4;
+    public static final double kIntakeSpeed = -0.6;
+    public static final double kOuttakeSpeed = 0.4;
     public static final double kStopSpeed = 0;
 
     public enum IntakeState {
