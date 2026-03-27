@@ -219,9 +219,8 @@ public class RobotContainer {
     operatorController
         .leftTrigger()
         .onTrue(
-            intakeArms
-                .runArmToIntakeStateCommand(IntakeState.INTAKING)
-                .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
+            intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING)
+            .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
         .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
     // operatorController
     //     .povDown()
@@ -257,9 +256,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "StowIntake",
         intakeArms
-            .runArmToIntakeStateCommand(IntakeState.STOWED)
-            .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
-            .finallyDo(() -> intake.stopIntake()));
+            .runArmToIntakeStateCommand(IntakeState.STOWED));
+            // .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
+            // .finallyDo(() -> intake.stopIntake()));
   }
 
   public void setDriveCharacterizationCommands() {
