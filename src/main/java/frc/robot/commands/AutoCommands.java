@@ -34,11 +34,11 @@ public class AutoCommands {
   }
 
   public Command shootForSec(double seconds) {
-    return m_shooter.runAtRPMSCommand(3000).withTimeout(seconds);
+    return m_shooter.runAtRPMSCommand(3100).withTimeout(seconds);
   }
 
   public Command shoot4FtCommand() {
-    return m_shooter.runAtRPMSCommand(3000);
+    return m_shooter.runAtRPMSCommand(3100);
   }
 
   public Command windUpShooter() {

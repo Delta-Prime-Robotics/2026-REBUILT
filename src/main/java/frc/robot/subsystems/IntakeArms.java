@@ -11,14 +11,11 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.IntakeConstants;
@@ -34,7 +31,6 @@ public class IntakeArms extends SubsystemBase {
   private final SparkMax m_leftArm; // NEO
   private final SparkMax m_rightArm; // NEO
 
- 
   private static SparkMaxConfig m_rightArmConfig = new SparkMaxConfig();
   private static SparkMaxConfig m_leftArmConfig = new SparkMaxConfig();
 
@@ -46,7 +42,6 @@ public class IntakeArms extends SubsystemBase {
   public static IntakeState currentIntakeState = IntakeState.STOWED;
 
   static {
-
     // Arm config
     m_rightArmConfig
         .idleMode(IdleMode.kBrake)
@@ -58,6 +53,7 @@ public class IntakeArms extends SubsystemBase {
     // Right Arm Config
     m_rightArmConfig
         .closedLoop
+        .outputRange(-0.5, 0.5)
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
         .pid(0.04, 0.0, 0.0)
         .allowedClosedLoopError(1, ClosedLoopSlot.kSlot0)
@@ -91,7 +87,7 @@ public class IntakeArms extends SubsystemBase {
 
   /** Creates a new Intake. */
   public IntakeArms() {
-    
+
     m_leftArm = new SparkMax(CanIdsOtherThanDrive.kLeftArmId, SparkMax.MotorType.kBrushless);
     m_rightArm = new SparkMax(CanIdsOtherThanDrive.kRightArmId, SparkMax.MotorType.kBrushless);
 
@@ -103,7 +99,7 @@ public class IntakeArms extends SubsystemBase {
     m_leftArmController = m_leftArm.getClosedLoopController();
     m_rightArmController = m_rightArm.getClosedLoopController();
 
-    m_leftArmEncoder = m_leftArm.getEncoder();  
+    m_leftArmEncoder = m_leftArm.getEncoder();
     m_rightArmEncoder = m_rightArm.getEncoder();
   }
 
@@ -157,30 +153,15 @@ public class IntakeArms extends SubsystemBase {
     return m_leftArmController.isAtSetpoint() && m_rightArmController.isAtSetpoint();
   }
 
-
   public Command runArmToAngleCommand(double armPosZeroToOne) {
-    return Commands.runOnce(() -> setArmSetpoint(armPosZeroToOne), this)
-      .andThen(Commands.waitUntil(this::isArmsAtSetpoint))
-      // .alongWith(
-      //     Commands.waitSeconds(0.25)
-      //         .andThen(
-      //             runOnce(
-      //                 () -> {
-      //                   m_armPose = armPosZeroToOne;
-      //                 }))))
-      .finallyDo(
-          () -> {
-            stopArm();
-            // stopIntake();
-          });
+    return this.run(() -> setArmSetpoint(armPosZeroToOne))
+        .until(this::isArmsAtSetpoint)
+        .finallyDo(() -> stopArm());
   }
 
   public Command thrustingCommand() {
-    return this.runArmToAngleCommand(
-            IntakeConstants.kArmThrustInwardPosition)
-        .andThen(
-            this.runArmToAngleCommand(
-                IntakeConstants.kArmThrustOutwardPosition))
+    return this.runArmToAngleCommand(IntakeConstants.kArmThrustInwardPosition)
+        .andThen(this.runArmToAngleCommand(IntakeConstants.kArmThrustOutwardPosition))
         .finallyDo(
             () -> {
               stopArm();
@@ -198,13 +179,16 @@ public class IntakeArms extends SubsystemBase {
   }
 
   public Command stowingCommand() {
-    return this.runArmToAngleCommand(
-            IntakeConstants.kArmStowPosition)
+    return this.runArmToAngleCommand(IntakeConstants.kArmStowPosition)
         .finallyDo(
             () -> {
               stopArm();
             })
         .beforeStarting(() -> currentIntakeState = IntakeState.STOWED);
+  }
+
+  public Command stopCommand() {
+    return this.run(() -> stopArm());
   }
 
   public Command runArmToIntakeStateCommand(IntakeState intakeState) {

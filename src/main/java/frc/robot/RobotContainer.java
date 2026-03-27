@@ -202,25 +202,30 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Operator controls
-    operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
-    operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.6, -0.6)
-      .alongWith(beltNado.runMotorCommand(0.75)));
+    intakeArms.setDefaultCommand(intakeArms.stopCommand());
 
-    //         .alongWith(intake.runArmToIntakeState(IntakeState.THRUSTING)))
-    // .onFalse(
-    //     intake.runArmToIntakeState(IntakeState.STOWED).andThen(beltNado.stopMotorCommand()));
+    operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
+    operatorController
+        .a()
+        .whileTrue(
+            kickdexer.runAtSpeedsCommand(-0.6, -0.6).alongWith(beltNado.runMotorCommand(0.75)));
+
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(2500));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
     operatorController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
 
     operatorController
         .leftTrigger()
-        .whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
-    operatorController
-        .povDown()
-        .whileTrue(intake.runIntakeAtSpeedCommand(IntakeConstants.kOuttakeSpeed));
+        .onTrue(
+            intakeArms
+                .runArmToIntakeStateCommand(IntakeState.INTAKING)
+                .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
+        .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+    // operatorController
+    //     .povDown()
+    //     .onTrue(intakeArms.runArmToAngleCommand(IntakeConstants.kArmStowPosition));
     // operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
     // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
