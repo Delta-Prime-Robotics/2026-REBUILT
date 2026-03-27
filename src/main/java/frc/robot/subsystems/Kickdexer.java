@@ -8,7 +8,6 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -32,6 +31,8 @@ public class Kickdexer extends SubsystemBase {
 
   private static SparkMaxConfig m_topMotorConfig = new SparkMaxConfig();
   private static SparkMaxConfig m_bottomMotorConfig = new SparkMaxConfig();
+  private static double kForwardSpeed = -0.6;
+  private static double kBackwardSpeed = 0.45;
 
   static {
     m_topMotorConfig
@@ -42,21 +43,21 @@ public class Kickdexer extends SubsystemBase {
 
     m_bottomMotorConfig.apply(m_topMotorConfig).inverted(true);
 
-    // Closed Loop Top Motor
-    m_topMotorConfig
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(0, 0, 0)
-        .feedForward
-        .sv(0, 0);
+    // // Closed Loop Top Motor
+    // m_topMotorConfig
+    //     .closedLoop
+    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    //     .pid(0, 0, 0)
+    //     .feedForward
+    //     .sv(0, 0);
 
-    // Closed Loop Bottom Motor
-    m_bottomMotorConfig
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(0, 0, 0)
-        .feedForward
-        .sv(0, 0);
+    // // Closed Loop Bottom Motor
+    // m_bottomMotorConfig
+    //     .closedLoop
+    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+    //     .pid(0, 0, 0)
+    //     .feedForward
+    //     .sv(0, 0);
   }
 
   /** Creates a new Kickdexer. */
@@ -109,8 +110,12 @@ public class Kickdexer extends SubsystemBase {
     return this.runEnd(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed), () -> stopMotors());
   }
 
-  public Command runKickdexerForward() {
-    return runAtSpeedsCommand(-0.5, -0.5);
+  public Command runKickdexerForwardCommand() {
+    return runAtSpeedsCommand(kForwardSpeed, kForwardSpeed);
+  }
+
+  public Command runKickdexerBackwardCommand() {
+    return runAtSpeedsCommand(kBackwardSpeed, kBackwardSpeed);
   }
 
   // ----------------------------------------

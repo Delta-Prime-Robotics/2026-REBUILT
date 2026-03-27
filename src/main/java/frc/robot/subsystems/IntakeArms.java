@@ -16,6 +16,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.IntakeConstants;
@@ -118,16 +119,13 @@ public class IntakeArms extends SubsystemBase {
     return currentIntakeState;
   }
 
+  private void zeroArmPose() {
+    m_leftArmEncoder.setPosition(0);
+    m_rightArmEncoder.setPosition(0);
+  }
+
   private void setArmSpeed(SparkMax arm, double speed) {
-    double outSpeed = 0.0;
-    Logger.recordOutput("Intake/ArmSpeed", speed);
-    if ((getLeftArmAngle() > IntakeConstants.kArmMinAngle)
-        && (getLeftArmAngle() < IntakeConstants.kArmMaxAngle)) {
-      outSpeed = speed;
-    } else {
-      outSpeed = 0.0;
-    }
-    arm.set(outSpeed);
+    arm.set(speed);
   }
 
   private void setArmSpeeds(double speed) {
@@ -153,6 +151,14 @@ public class IntakeArms extends SubsystemBase {
     return m_leftArmController.isAtSetpoint() && m_rightArmController.isAtSetpoint();
   }
 
+  public Command zeroArmPoseCommand() {
+    return runOnce(() -> zeroArmPose());
+  }
+
+  public Command runArmWithSpeedsCommand(double speed) {
+    return runEnd(() -> setArmSpeeds(speed), () -> stopArm());
+  }
+
   public Command runArmToAngleCommand(double armPosZeroToOne) {
     return this.run(() -> setArmSetpoint(armPosZeroToOne))
         .until(this::isArmsAtSetpoint)
@@ -160,8 +166,12 @@ public class IntakeArms extends SubsystemBase {
   }
 
   public Command thrustingCommand() {
-    return this.runArmToAngleCommand(IntakeConstants.kArmThrustInwardPosition)
-        .andThen(this.runArmToAngleCommand(IntakeConstants.kArmThrustOutwardPosition))
+    double rateSecs = 1;
+    return Commands.repeatingSequence(
+            this.runArmToAngleCommand(IntakeConstants.kArmThrustInwardPosition),
+            Commands.waitSeconds(rateSecs),
+            this.runArmToAngleCommand(IntakeConstants.kArmThrustOutwardPosition),
+            Commands.waitSeconds(rateSecs))
         .finallyDo(
             () -> {
               stopArm();
@@ -187,7 +197,7 @@ public class IntakeArms extends SubsystemBase {
         .beforeStarting(() -> currentIntakeState = IntakeState.STOWED);
   }
 
-  public Command stopCommand() {
+  public Command stopArmCommand() {
     return this.run(() -> stopArm());
   }
 
