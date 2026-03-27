@@ -3,45 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5862054208273886,
-        "y": 6.098716119828817
+        "x": 3.5342000000000002,
+        "y": 3.966788888888888
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9203,
-        "y": 6.0521
+        "x": 3.783879622803634,
+        "y": 3.9794413968076805
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Start Hub"
     },
     {
       "anchor": {
-        "x": 2.3064,
-        "y": 5.2920333333333325
+        "x": 3.5342000000000002,
+        "y": 3.966788888888888
       },
       "prevControl": {
-        "x": 2.463485936371748,
-        "y": 5.097549378740129
+        "x": 3.253767212480354,
+        "y": 3.9525501555246896
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Start Hub"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.612,
-        "y": 4.021
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.4158808933002454,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Hub"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -53,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -28.576283839709312
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "In Alliance Zone",
+  "folder": "Shoot In Place",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -22,21 +22,26 @@ public class AutoCommands {
     this.m_shooter = shooter;
   }
 
-  public Command feedShooter() {
+  public Command feedShooterForSec(double seconds) {
     return new ParallelCommandGroup(
             m_kickdexer.runKickdexerForward(), m_beltNado.runMotorCommand(0.75))
-        .withTimeout(10);
+        .withTimeout(seconds);
   }
 
-  public Command shoot() {
-    return m_shooter
-        .runAtRPMSCommand(3000)
-        .beforeStarting(() -> System.out.println("shooting"))
-        .finallyDo(() -> System.out.println("shooting finished"))
-        .withTimeout(10);
+  public Command feedShooter() {
+    return new ParallelCommandGroup(
+        m_kickdexer.runKickdexerForward(), m_beltNado.runMotorCommand(0.75));
+  }
+
+  public Command shootForSec(double seconds) {
+    return m_shooter.runAtRPMSCommand(3100).withTimeout(seconds);
+  }
+
+  public Command shoot4FtCommand() {
+    return m_shooter.runAtRPMSCommand(3100);
   }
 
   public Command windUpShooter() {
-    return m_shooter.runAtRPMSCommand(3000).until(() -> m_shooter.isAtSetpoint());
+    return m_shooter.runAtRPMSCommand(3000);
   }
 }

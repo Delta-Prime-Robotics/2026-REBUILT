@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot TopBump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Top To Depo"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot Depo"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Safe Autos",
+  "choreoAuto": false
+}

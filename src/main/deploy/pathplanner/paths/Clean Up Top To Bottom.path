@@ -1,0 +1,75 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.184688888888888,
+        "y": 5.516155555555556
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.184688888888888,
+        "y": 4.578863586340223
+      },
+      "isLocked": false,
+      "linkedName": "End Top Bump Neutral"
+    },
+    {
+      "anchor": {
+        "x": 6.184688888888888,
+        "y": 2.5733333333333324
+      },
+      "prevControl": {
+        "x": 6.213922222222221,
+        "y": 3.2262111111111094
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Start Bottom Bump Neutral"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.13195020746888128,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 0.8024896265560112,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake Fuel",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake Fuel"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": -135.0
+  },
+  "reversed": false,
+  "folder": "In Neutral Zone",
+  "idealStartingState": {
+    "velocity": 1.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

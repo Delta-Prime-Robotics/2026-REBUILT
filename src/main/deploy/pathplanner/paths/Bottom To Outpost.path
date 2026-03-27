@@ -3,45 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5862054208273886,
-        "y": 6.098716119828817
+        "x": 3.45681883024251,
+        "y": 2.074793152639087
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9203,
-        "y": 6.0521
+        "x": 1.8876501458431254,
+        "y": 1.3554769915850842
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.3064,
-        "y": 5.2920333333333325
+        "x": 0.5326818830242506,
+        "y": 0.6644793152639101
       },
       "prevControl": {
-        "x": 2.463485936371748,
-        "y": 5.097549378740129
+        "x": 1.619538268540274,
+        "y": 1.2274730268076435
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": null
+      "isLocked": true,
+      "linkedName": "Load Outpost"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "pointTowardsZones": [
-    {
-      "fieldPosition": {
-        "x": 4.612,
-        "y": 4.021
-      },
-      "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.4158808933002454,
-      "maxWaypointRelativePos": 1.0,
-      "name": "Point Towards Hub"
-    }
-  ],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
@@ -53,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -28.576283839709312
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "In Alliance Zone",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": -90.0
+    "velocity": 2.0,
+    "rotation": 66.089
   },
   "useDefaultConstraints": true
 }

@@ -5,22 +5,21 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "TopShoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "WindUpShooter"
-                }
-              }
-            ]
+            "pathName": "Shoot BottomBump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom Bump To Neutral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Clean Up Bottom To Top"
           }
         },
         {
@@ -28,15 +27,15 @@
           "data": {
             "commands": [
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Shoot"
+                  "pathName": "Top Bump From Steal To Top Shoot"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "FeedShooter"
+                  "name": "WindUpShooter"
                 }
               }
             ]

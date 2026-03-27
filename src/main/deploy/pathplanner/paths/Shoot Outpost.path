@@ -3,28 +3,28 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5862054208273886,
-        "y": 6.098716119828817
+        "x": 0.5326818830242506,
+        "y": 0.6644793152639101
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9203,
-        "y": 6.0521
+        "x": 1.0718000086906752,
+        "y": 0.8644380846937032
       },
-      "isLocked": false,
-      "linkedName": null
+      "isLocked": true,
+      "linkedName": "Load Outpost"
     },
     {
       "anchor": {
-        "x": 2.3064,
-        "y": 5.2920333333333325
+        "x": 1.0372895863052778,
+        "y": 0.8068045649072757
       },
       "prevControl": {
-        "x": 2.463485936371748,
-        "y": 5.097549378740129
+        "x": 0.7875665617793535,
+        "y": 0.8185693862669299
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     }
   ],
@@ -37,12 +37,19 @@
         "y": 4.021
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.4158808933002454,
+      "minWaypointRelativePos": 0.6698176907494963,
       "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Hub"
     }
   ],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "WindUpShooter",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 1.0,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -53,13 +60,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -28.576283839709312
+    "rotation": 42.294273082633374
   },
   "reversed": false,
-  "folder": "In Alliance Zone",
+  "folder": "Shoot In Place",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

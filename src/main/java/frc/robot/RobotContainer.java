@@ -21,12 +21,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ShooterCommands;
 import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.IntakeConstants;
+import frc.robot.constants.Constants.IntakeConstants.IntakeState;
 import frc.robot.constants.FieldConstants;
 import frc.robot.subsystems.BeltNado;
 import frc.robot.subsystems.FlywheelShooter;
 import frc.robot.subsystems.Haptics;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeArms;
 import frc.robot.subsystems.Kickdexer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -54,6 +57,8 @@ public class RobotContainer {
   private final FlywheelShooter flywheelShooter = new FlywheelShooter();
   private final Kickdexer kickdexer = new Kickdexer();
   private final BeltNado beltNado = new BeltNado();
+  private final Intake intake = new Intake();
+  private final IntakeArms intakeArms = new IntakeArms();
   private final AutoCommands autoCommands = new AutoCommands(kickdexer, beltNado, flywheelShooter);
 
   // Controller
@@ -79,7 +84,6 @@ public class RobotContainer {
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
                 new ModuleIOSpark(3));
-
         vision =
             new Vision(
                 drive::addVisionMeasurement,
@@ -156,7 +160,7 @@ public class RobotContainer {
             () -> -driverController.getLeftX(),
             () -> -driverController.getRightX()));
 
-    // Lock to 45° when A button is held
+    // Lock to 45° when B button is held
     // to go over bumps
     driverController
         .b()
@@ -168,27 +172,23 @@ public class RobotContainer {
                 () -> Rotation2d.fromDegrees(45)));
 
     // Aim at hub when A button is held
-    // driverController
-    //     .a()
-    //     .whileTrue(
-    //         DriveCommands.aimAtHubWhileDriving(
-    //             drive,
-    //             () -> -driverController.getLeftY(),
-    //             () ->
-    //                 -driverController
-    //                     .getLeftX()));
+    driverController
+        .a()
+        .whileTrue(
+            DriveCommands.aimAtHubWhileDriving(
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
     // to-do, maybe create constant for these field coords
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
 
-    driverController
-        .a()
-        .whileTrue(
-            ShooterCommands.shootAtHubWhileDriving(
-                drive,
-                flywheelShooter,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX()));
+    // driverController
+    //     .a()
+    //     .whileTrue(
+    //         ShooterCommands.shootAtHubWhileDriving(
+    //             drive,
+    //             flywheelShooter,
+    //             () -> -driverController.getLeftY(),
+    //             () -> -driverController.getLeftX()));
 
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -206,17 +206,33 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Operator controls
-    operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
-    operatorController.a().whileTrue(kickdexer.runAtSpeedsCommand(-0.6, -0.6));
+    intakeArms.setDefaultCommand(intakeArms.stopCommand());
 
-    operatorController.x().whileTrue(beltNado.runMotorCommand(0.75));
+    operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
+    operatorController
+        .a()
+        .whileTrue(
+            kickdexer.runAtSpeedsCommand(-0.6, -0.6).alongWith(beltNado.runMotorCommand(0.75)));
+
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3000));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
+    // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
+    operatorController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
+
+    operatorController
+        .leftTrigger()
+        .onTrue(
+            intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING)
+            .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
+        .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+    // operatorController
+    //     .povDown()
+    //     .onTrue(intakeArms.runArmToAngleCommand(IntakeConstants.kArmStowPosition));
+    // operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
+    // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
     // flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
-    driverController.povDown().onTrue(driverHaptics.shiftChangeOutOfMyAlliance());
-    driverController.povUp().onTrue(driverHaptics.shiftChangeToMyAlliance());
 
     // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
     // operatorController
@@ -231,9 +247,22 @@ public class RobotContainer {
 
   public void addNamedAutoCommands() {
     NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter());
-    NamedCommands.registerCommand("Shoot", flywheelShooter.runAtRPMSCommand(3000).withTimeout(5));
+    NamedCommands.registerCommand("Shoot", autoCommands.shoot4FtCommand());
+    NamedCommands.registerCommand("AutoShoot", flywheelShooter.autoShootRange());
     // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
-    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter().withTimeout(1));
+    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter());
+    NamedCommands.registerCommand(
+        "WindUpShooterWithTimeout", autoCommands.windUpShooter().withTimeout(1));
+    NamedCommands.registerCommand(
+        "IntakeDown", intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING));
+    NamedCommands.registerCommand(
+        "IntakeFuel", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
+    NamedCommands.registerCommand(
+        "StowIntake",
+        intakeArms
+            .runArmToIntakeStateCommand(IntakeState.STOWED));
+            // .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
+            // .finallyDo(() -> intake.stopIntake()));
   }
 
   public void setDriveCharacterizationCommands() {

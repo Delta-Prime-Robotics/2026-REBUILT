@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot BottomBump"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Bottom To Outpost"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Shoot Outpost"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Safe Autos",
+  "choreoAuto": false
+}

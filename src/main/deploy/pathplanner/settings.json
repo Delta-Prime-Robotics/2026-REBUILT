@@ -2,8 +2,16 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
-  "autoFolders": [],
+  "pathFolders": [
+    "In Neutral Zone",
+    "In Alliance Zone",
+    "Shoot In Place",
+    "To Alliance Zone",
+    "To Neutral Zone"
+  ],
+  "autoFolders": [
+    "Safe Autos"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

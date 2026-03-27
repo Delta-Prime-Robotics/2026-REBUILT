@@ -9,34 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "TopShoot"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "WindUpShooter"
                 }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Shoot"
-                }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "FeedShooter"
+                  "pathName": "Shoot Hub"
                 }
               }
             ]
@@ -46,6 +27,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Safe Autos",
   "choreoAuto": false
 }
