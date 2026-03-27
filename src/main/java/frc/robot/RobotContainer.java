@@ -181,15 +181,6 @@ public class RobotContainer {
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
 
-    // driverController
-    //     .a()
-    //     .whileTrue(
-    //         ShooterCommands.shootAtHubWhileDriving(
-    //             drive,
-    //             flywheelShooter,
-    //             () -> -driverController.getLeftY(),
-    //             () -> -driverController.getLeftX()));
-
     // Switch to X pattern when X button is pressed
     driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
@@ -206,13 +197,14 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Operator controls
-    intakeArms.setDefaultCommand(intakeArms.stopCommand());
+    intakeArms.setDefaultCommand(intakeArms.stopArmCommand());
 
-    operatorController.b().whileTrue(kickdexer.runAtSpeedsCommand(0.5, 0.5));
+    operatorController.b().whileTrue(kickdexer.runKickdexerBackwardCommand());
+
     operatorController
         .a()
         .whileTrue(
-            kickdexer.runAtSpeedsCommand(-0.6, -0.6).alongWith(beltNado.runMotorCommand(0.75)));
+            kickdexer.runKickdexerForwardCommand().alongWith(beltNado.runMotorCommand(0.75)));
 
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
@@ -223,9 +215,24 @@ public class RobotContainer {
     operatorController
         .leftTrigger()
         .onTrue(
-            intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING)
-            .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
+            intakeArms
+                .runArmToIntakeStateCommand(IntakeState.INTAKING)
+                .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
         .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+
+    operatorController
+        .rightStick()
+        .and(operatorController.povUp())
+        .whileTrue(intakeArms.runArmWithSpeedsCommand(0.2));
+    operatorController
+        .rightStick()
+        .and(operatorController.povDown())
+        .whileTrue(intakeArms.runArmWithSpeedsCommand(-0.2));
+    operatorController
+        .rightStick()
+        .and(operatorController.povRight())
+        .onTrue(intakeArms.zeroArmPoseCommand());
+
     // operatorController
     //     .povDown()
     //     .onTrue(intakeArms.runArmToAngleCommand(IntakeConstants.kArmStowPosition));
@@ -233,11 +240,6 @@ public class RobotContainer {
     // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
 
     // flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
-
-    // Auto-range shooter control without coupling the shooter command to the Drive subsystem API.
-    // operatorController
-    //     .leftTrigger()
-    //     .whileTrue(flywheelShooter.autoShootRange(this::getDistanceToHubMeters));
 
   }
 
@@ -258,11 +260,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "IntakeFuel", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
     NamedCommands.registerCommand(
-        "StowIntake",
-        intakeArms
-            .runArmToIntakeStateCommand(IntakeState.STOWED));
-            // .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
-            // .finallyDo(() -> intake.stopIntake()));
+        "StowIntake", intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+    // .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
+    // .finallyDo(() -> intake.stopIntake()));
   }
 
   public void setDriveCharacterizationCommands() {

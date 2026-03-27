@@ -24,13 +24,13 @@ public class AutoCommands {
 
   public Command feedShooterForSec(double seconds) {
     return new ParallelCommandGroup(
-            m_kickdexer.runKickdexerForward(), m_beltNado.runMotorCommand(0.75))
+            m_kickdexer.runKickdexerForwardCommand(), m_beltNado.runMotorCommand(0.75))
         .withTimeout(seconds);
   }
 
   public Command feedShooter() {
     return new ParallelCommandGroup(
-        m_kickdexer.runKickdexerForward(), m_beltNado.runMotorCommand(0.75));
+        m_kickdexer.runKickdexerForwardCommand(), m_beltNado.runMotorCommand(0.75));
   }
 
   public Command shootForSec(double seconds) {
