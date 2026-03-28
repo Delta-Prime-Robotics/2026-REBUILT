@@ -51,7 +51,7 @@ public class AllianceShiftTracker {
       warnedShiftPhases.clear();
       myAlliance = DriverStation.getAlliance();
     }
-    if (matchTime >= 130){ //130 seconds
+    if (matchTime >= 130) { // 130 seconds
       updateAutoWinner(DriverStation.getGameSpecificMessage());
       myAlliance = DriverStation.getAlliance();
     }
@@ -80,7 +80,8 @@ public class AllianceShiftTracker {
     Logger.recordOutput("AllianceShift/NextActive", shiftState.nextActiveAlliance.displayName);
     Logger.recordOutput("AllianceShift/SecondsToNextShift", shiftState.secondsToNextShift);
     Logger.recordOutput("AllianceShift/MyAlliance", formatAlliance(myAlliance));
-    Logger.recordOutput("AllianceShift/IsMyAllianceActive", formatAllianceActivity(isMyAllianceActive));
+    Logger.recordOutput(
+        "AllianceShift/IsMyAllianceActive", formatAllianceActivity(isMyAllianceActive));
   }
 
   private static ShiftState computeShiftState(double matchTime, AutoWinner autoWinner) {
@@ -134,39 +135,34 @@ public class AllianceShiftTracker {
       return;
     }
 
-    boolean shouldWarnEndGame = 
-      shiftState.secondsToNextShift <= 15.0 &&
-      shiftState.secondsToNextShift > 0.0 &&
-      "Endgame".equals(shiftState.phaseName);
+    boolean shouldWarnEndGame =
+        shiftState.secondsToNextShift <= 15.0
+            && shiftState.secondsToNextShift > 0.0
+            && "Endgame".equals(shiftState.phaseName);
 
-     boolean shouldWarnShift =
+    boolean shouldWarnShift =
         shiftState.secondsToNextShift > 0.0 && shiftState.secondsToNextShift <= 6.0;
 
     if (shouldWarnEndGame && warnedShiftPhases.add(shiftState.phaseName)) {
-      commandScheduler.schedule( 
-        haptics[0].endGame(),
-        haptics[1].endGame());
+      commandScheduler.schedule(haptics[0].endGame(), haptics[1].endGame());
       return;
     }
 
     if (shouldWarnShift && warnedShiftPhases.add(shiftState.phaseName)) {
       System.out.println(shiftState.phaseName);
-      if("Shift 4".equals(shiftState.phaseName)) {
-        commandScheduler.schedule( 
-        haptics[0].shiftChangeToMyAlliance(),
-        haptics[1].shiftChangeToMyAlliance());
+      if ("Shift 4".equals(shiftState.phaseName)) {
+        commandScheduler.schedule(
+            haptics[0].shiftChangeToMyAlliance(), haptics[1].shiftChangeToMyAlliance());
         return;
       }
       if (!isMyAllianceActive) {
-        commandScheduler.schedule( 
-        haptics[0].shiftChangeToMyAlliance(),
-        haptics[1].shiftChangeToMyAlliance());
+        commandScheduler.schedule(
+            haptics[0].shiftChangeToMyAlliance(), haptics[1].shiftChangeToMyAlliance());
         return;
       }
       if (isMyAllianceActive) {
-        commandScheduler.schedule( 
-        haptics[0].shiftChangeOutOfMyAlliance(),
-        haptics[1].shiftChangeOutOfMyAlliance());
+        commandScheduler.schedule(
+            haptics[0].shiftChangeOutOfMyAlliance(), haptics[1].shiftChangeOutOfMyAlliance());
         return;
       }
     }

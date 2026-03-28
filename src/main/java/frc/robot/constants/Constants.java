@@ -71,7 +71,7 @@ public final class Constants {
     public static final double kArmMinAngle = 0.5;
     public static final double kArmMaxAngle = 21.7;
 
-    public static final double kIntakeSpeed = -0.55;
+    public static final double kIntakeSpeed = -0.5;
     public static final double kFeedingSpeed = -0.4;
     public static final double kOuttakeSpeed = 0.4;
     public static final double kStopSpeed = 0;

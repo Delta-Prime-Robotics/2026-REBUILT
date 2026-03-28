@@ -208,9 +208,9 @@ public class RobotContainer {
 
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
+    operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(3200));
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
-    operatorController.rightBumper().whileTrue(flywheelShooter.autoShootRange());
+    operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
 
     operatorController
         .leftTrigger()
@@ -218,6 +218,15 @@ public class RobotContainer {
             intakeArms
                 .runArmToIntakeStateCommand(IntakeState.INTAKING)
                 .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
+        .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+
+    operatorController
+        .povDown()
+        .onTrue(
+            intakeArms
+                .runArmToIntakeStateCommand(IntakeState.OUTTAKING)
+                .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kOuttakeSpeed))
+                .alongWith(beltNado.runMotorCommand(-0.5)))
         .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
 
     operatorController
