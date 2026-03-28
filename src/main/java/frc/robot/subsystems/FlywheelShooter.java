@@ -50,8 +50,8 @@ public class FlywheelShooter extends SubsystemBase {
 
   // static configuration block
   static {
-    kShooterDistanceToRpmMap.put(1.2, 2600.0);
-    kShooterDistanceToRpmMap.put(1.8, 3000.0);
+    kShooterDistanceToRpmMap.put(1.8, 2900.0);
+    kShooterDistanceToRpmMap.put(2.1, 3050.0);
     kShooterDistanceToRpmMap.put(2.5, 3100.0);
     kShooterDistanceToRpmMap.put(3.2, 3200.0);
     kShooterDistanceToRpmMap.put(3.6, 3400.0);
@@ -156,9 +156,10 @@ public class FlywheelShooter extends SubsystemBase {
   public Command windUpShooterCommand() {
     // Maybe start runing shooter at low speed when on allince side of the field
     // to decrease spinup time when trying to shoot
-    final double shooterAvgSetpointRPM = 2700; // Example average shooter setpoint
-    return runAtRPMSCommand(
-        shooterAvgSetpointRPM); // This should only run if the command is interrupted
+    final double shooterAvgSetpointRPM = 3000; // Example average shooter setpoint
+    return runAtRPMSCommand(shooterAvgSetpointRPM)
+        .until(() -> isAtSetpoint())
+        .withTimeout(1); // This should only run if the command is interrupted
   }
 
   public Command idleShooterCommand() {

@@ -208,7 +208,7 @@ public class RobotContainer {
 
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
-    operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(3200));
+    operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
     operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
 
@@ -261,7 +261,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot", autoCommands.shoot4FtCommand());
     NamedCommands.registerCommand("AutoShoot", flywheelShooter.autoShootRange());
     // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
-    NamedCommands.registerCommand("WindUpShooter", autoCommands.windUpShooter());
+    NamedCommands.registerCommand("WindUpShooter", flywheelShooter.windUpShooterCommand());
     NamedCommands.registerCommand(
         "WindUpShooterWithTimeout", autoCommands.windUpShooter().withTimeout(1));
     NamedCommands.registerCommand(
@@ -269,7 +269,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "IntakeFuel", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
     NamedCommands.registerCommand(
-        "StowIntake", intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+        "StowIntake", intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED).withTimeout(2));
     // .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
     // .finallyDo(() -> intake.stopIntake()));
   }

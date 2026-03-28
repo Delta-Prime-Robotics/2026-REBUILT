@@ -17,6 +17,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "StowIntake"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -29,16 +35,10 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "StowIntake"
+                  "name": "WindUpShooter"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WindUpShooter"
           }
         },
         {
@@ -54,7 +54,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "AutoShoot"
                 }
               },
               {
