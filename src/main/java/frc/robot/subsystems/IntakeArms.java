@@ -148,6 +148,7 @@ public class IntakeArms extends SubsystemBase {
 
   @AutoLogOutput(key = "Intake/isArmAtSetPoint")
   public boolean isArmsAtSetpoint() {
+    // not sure if this is working
     return m_leftArmController.isAtSetpoint() && m_rightArmController.isAtSetpoint();
   }
 

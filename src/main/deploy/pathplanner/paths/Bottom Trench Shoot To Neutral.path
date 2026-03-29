@@ -3,55 +3,64 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.431977777777779,
-        "y": 6.812166666666667
+        "x": 2.623860398860399,
+        "y": 1.0891880341880347
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.378504273504273,
-        "y": 5.055698005698006
+        "x": 2.871809181324363,
+        "y": 1.1211474033094333
       },
       "isLocked": false,
-      "linkedName": "Steal Top"
+      "linkedName": "End Shoot Bottom Trench"
     },
     {
       "anchor": {
-        "x": 7.431977777777779,
-        "y": 4.756088888888888
+        "x": 4.674300000000001,
+        "y": 0.585466666666665
       },
       "prevControl": {
-        "x": 7.421003828014736,
-        "y": 5.063359482254117
+        "x": 3.424362099176587,
+        "y": 0.573860543266784
       },
       "nextControl": {
-        "x": 7.451466666666667,
-        "y": 4.210399999999999
+        "x": 6.047720797720797,
+        "y": 0.5982193732193741
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.184688888888888,
-        "y": 5.516155555555556
+        "x": 7.54891111111111,
+        "y": 1.2773222222222216
       },
       "prevControl": {
-        "x": 6.176923076923076,
-        "y": 4.926495726495727
+        "x": 6.693732193732193,
+        "y": 0.8953846153846156
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "End Top Bump Neutral"
+      "linkedName": "Steal Bottom"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7972810875649722,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.1395441823270722,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.033746898263050565,
-      "maxWaypointRelativePos": 1.0421836228287942,
+      "minWaypointRelativePos": 0.3593052109181054,
+      "maxWaypointRelativePos": 1.8719602977667495,
       "constraints": {
-        "maxVelocity": 1.25,
+        "maxVelocity": 3.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -63,13 +72,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Intake Fuel",
-      "waypointRelativePos": 0,
+      "name": "IntakeDown",
+      "waypointRelativePos": 1.1557454890788195,
       "endWaypointRelativePos": 2.0,
       "command": {
         "type": "named",
         "data": {
-          "name": "Intake Fuel"
+          "name": "IntakeDown"
         }
       }
     }
@@ -83,14 +92,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": -90.0
+    "velocity": 1.25,
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "In Neutral Zone",
+  "folder": "To Neutral Zone",
   "idealStartingState": {
-    "velocity": 1.25,
-    "rotation": -90.0
+    "velocity": 2.0,
+    "rotation": 64.55459350345117
   },
   "useDefaultConstraints": true
 }

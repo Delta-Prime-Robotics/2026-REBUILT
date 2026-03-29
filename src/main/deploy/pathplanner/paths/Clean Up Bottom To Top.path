@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.184688888888888,
-        "y": 2.5733333333333324
+        "x": 6.8358547008547,
+        "y": 0.9083048433048442
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.28056719041369,
-        "y": 4.0444691844844645
+        "x": 6.931733002379501,
+        "y": 2.379440694455976
       },
       "isLocked": false,
       "linkedName": "End Bottom Bump Neutral"
@@ -77,13 +77,13 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "In Neutral Zone",
   "idealStartingState": {
     "velocity": 1.0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

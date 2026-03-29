@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.558655555555555,
-        "y": 2.6025666666666654
+        "x": 7.495040309894789,
+        "y": 2.719401029290644
       },
       "isLocked": false,
       "linkedName": "Steal Bottom"
@@ -20,33 +20,33 @@
         "y": 3.4016111111111105
       },
       "prevControl": {
-        "x": 7.57611933304491,
-        "y": 2.6224695764370423
+        "x": 7.623988603988604,
+        "y": 2.407051282051283
       },
       "nextControl": {
-        "x": 7.53495131243011,
-        "y": 3.8013674419187486
+        "x": 7.51958693311719,
+        "y": 3.7900717314003565
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.184688888888888,
-        "y": 2.5733333333333324
+        "x": 6.6291310541310535,
+        "y": 0.9212250712250716
       },
       "prevControl": {
-        "x": 6.0788401831132575,
-        "y": 2.346847017001365
+        "x": 7.107507831133254,
+        "y": 1.2742804928134979
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "End Bottom Bump Neutral"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9709543568464641,
+      "waypointRelativePos": 0.784486205517793,
       "rotationDegrees": 90.0
     }
   ],
@@ -68,13 +68,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Intake Fuel",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": 2.0,
+      "name": "StowIntake",
+      "waypointRelativePos": 1.5887939221272518,
+      "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Intake Fuel"
+          "name": "StowIntake"
         }
       }
     }
@@ -88,8 +88,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.5,
-    "rotation": 90.0
+    "velocity": 2.5,
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "In Neutral Zone",

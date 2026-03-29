@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.Constants;
-import frc.robot.util.AllianceShiftTracker;
+// import frc.robot.util.AllianceShiftTracker;
 import frc.robot.util.Elastic;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -32,7 +32,6 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
-  private final AllianceShiftTracker allianceShiftTracker;
 
   public Robot() {
     // Record metadata
@@ -92,8 +91,8 @@ public class Robot extends LoggedRobot {
     // and put our autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
 
-    allianceShiftTracker =
-        new AllianceShiftTracker(robotContainer.driverHaptics, robotContainer.operatorHaptics);
+    // allianceShiftTracker =
+    //     new AllianceShiftTracker(robotContainer.driverHaptics, robotContainer.operatorHaptics);
   }
 
   /** This function is called periodically during all modes. */
@@ -110,7 +109,7 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    allianceShiftTracker.update();
+    // allianceShiftTracker.update();
     // Return to non-RT thread priority (do not modify the first argument)
     // Threads.setCurrentThreadPriority(false, 10);
   }

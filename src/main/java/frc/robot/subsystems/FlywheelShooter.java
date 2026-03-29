@@ -52,7 +52,7 @@ public class FlywheelShooter extends SubsystemBase {
   static {
     kShooterDistanceToRpmMap.put(1.8, 2900.0);
     kShooterDistanceToRpmMap.put(2.1, 3050.0);
-    kShooterDistanceToRpmMap.put(2.5, 3100.0);
+    kShooterDistanceToRpmMap.put(2.7, 3100.0);
     kShooterDistanceToRpmMap.put(3.2, 3200.0);
     kShooterDistanceToRpmMap.put(3.6, 3400.0);
     kShooterDistanceToRpmMap.put(4.5, 3700.0);

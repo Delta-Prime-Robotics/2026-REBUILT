@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Shoot TopBump"
+                  "pathName": "Shoot Hub"
                 }
               },
               {
@@ -49,28 +49,9 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Top To Depo"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeDown"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake Fuel"
-                }
-              }
-            ]
+            "pathName": "Middle To Depo"
           }
         },
         {

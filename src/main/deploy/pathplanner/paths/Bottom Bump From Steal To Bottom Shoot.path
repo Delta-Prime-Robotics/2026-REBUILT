@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.184688888888888,
-        "y": 2.5733333333333324
+        "x": 6.8358547008547,
+        "y": 0.9083048433048442
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.6031716562082945,
-        "y": 2.6001407379279304
+        "x": 6.254337468174106,
+        "y": 0.9351122478994423
       },
       "isLocked": false,
       "linkedName": "End Bottom Bump Neutral"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.4465000000000003,
-        "y": 2.1348333333333325
+        "x": 3.4507549857549855,
+        "y": 2.0711253561253566
       },
       "prevControl": {
-        "x": 3.9912776755646626,
-        "y": 2.3910358399217437
+        "x": 3.995532661319648,
+        "y": 2.327327862713768
       },
       "nextControl": null,
       "isLocked": false,
@@ -63,8 +63,8 @@
   "reversed": false,
   "folder": "To Alliance Zone",
   "idealStartingState": {
-    "velocity": 1.5,
-    "rotation": 90.0
+    "velocity": 2.5,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -201,12 +201,10 @@ public class RobotContainer {
 
     operatorController.b().whileTrue(kickdexer.runKickdexerBackwardCommand());
 
-    operatorController
-        .a()
-        .whileTrue(
-            kickdexer.runKickdexerForwardCommand().alongWith(beltNado.runMotorCommand(0.75)));
+    operatorController.a().whileTrue(kickdexer.runKickdexerForwardCommand());
+    // .alongWith(beltNado.runMotorCommand(0.75)));
 
-    operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
+    // operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
     operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
     // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
@@ -217,7 +215,7 @@ public class RobotContainer {
         .onTrue(
             intakeArms
                 .runArmToIntakeStateCommand(IntakeState.INTAKING)
-                .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed)))
+                .alongWith(intake.runIntakeAtRPMCommand(IntakeConstants.kIntakeSetpoint)))
         .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
 
     operatorController
@@ -225,7 +223,7 @@ public class RobotContainer {
         .onTrue(
             intakeArms
                 .runArmToIntakeStateCommand(IntakeState.OUTTAKING)
-                .alongWith(intake.runIntakeAtSpeedCommand(IntakeConstants.kOuttakeSpeed))
+                .alongWith(intake.runIntakeAtRPMCommand(IntakeConstants.kOuttakeSetpoint))
                 .alongWith(beltNado.runMotorCommand(-0.5)))
         .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
 
@@ -267,7 +265,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "IntakeDown", intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING));
     NamedCommands.registerCommand(
-        "IntakeFuel", intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed));
+        "Intake Fuel",
+        intake.runIntakeAtRPMCommandWithoutStopping(IntakeConstants.kIntakeSetpoint));
     NamedCommands.registerCommand(
         "StowIntake", intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED).withTimeout(2));
     // .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))

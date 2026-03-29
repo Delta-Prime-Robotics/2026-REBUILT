@@ -8,6 +8,7 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -18,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CanIdsOtherThanDrive;
 import frc.robot.constants.Constants.MotorConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class Kickdexer extends SubsystemBase {
   private static SparkMax m_topMotor; // NEO
@@ -43,21 +43,21 @@ public class Kickdexer extends SubsystemBase {
 
     m_bottomMotorConfig.apply(m_topMotorConfig).inverted(true);
 
-    // // Closed Loop Top Motor
-    // m_topMotorConfig
-    //     .closedLoop
-    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    //     .pid(0, 0, 0)
-    //     .feedForward
-    //     .sv(0, 0);
+    // Closed Loop Top Motor
+    m_topMotorConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(0.0001, 0, 0)
+        .feedForward
+        .sv(0.147, 0.00841);
 
-    // // Closed Loop Bottom Motor
-    // m_bottomMotorConfig
-    //     .closedLoop
-    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    //     .pid(0, 0, 0)
-    //     .feedForward
-    //     .sv(0, 0);
+    // Closed Loop Bottom Motor
+    m_bottomMotorConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(0.0004, 0, 0.01)
+        .feedForward
+        .sv(0.2, 0.00855);
   }
 
   /** Creates a new Kickdexer. */
@@ -88,6 +88,11 @@ public class Kickdexer extends SubsystemBase {
     return m_bottomEncoder.getVelocity();
   }
 
+  @AutoLogOutput(key = "Kickdexer/SetpointRPM")
+  public double getSetpoint() {
+    return m_topClosedLoopController.getSetpoint();
+  }
+
   private void setMotorSpeeds(double topMotorSpeed, double bottomMotorSpeed) {
     // topMotorSpeed = MathUtil.clamp(topMotorSpeed, -1.0, 1.0);
     // bottomMotorSpeed = MathUtil.clamp(bottomMotorSpeed, -1.0, 1.0);
@@ -110,30 +115,35 @@ public class Kickdexer extends SubsystemBase {
     return this.runEnd(() -> setMotorSpeeds(topMotorSpeed, bottomMotorSpeed), () -> stopMotors());
   }
 
+  // public Command runKickdexerForwardCommand() {
+  //   return runAtSpeedsCommand(kForwardSpeed, kForwardSpeed);
+  // }
+
+  // public Command runKickdexerBackwardCommand() {
+  //   return runAtSpeedsCommand(kBackwardSpeed, kBackwardSpeed);
+  // }
+
   public Command runKickdexerForwardCommand() {
-    return runAtSpeedsCommand(kForwardSpeed, kForwardSpeed);
+    return setVelocitySetpointsCommand(-1000);
   }
 
   public Command runKickdexerBackwardCommand() {
-    return runAtSpeedsCommand(kBackwardSpeed, kBackwardSpeed);
+    return setVelocitySetpointsCommand(800);
   }
 
   // ----------------------------------------
   //  Have not used any of this stuff below
   // ----------------------------------------
 
-  private void setVelocitySetpoints(double topSetpointRPM, double bottomSetpointRPM) {
+  private void setVelocitySetpoints(double setpointRPM) {
     m_topClosedLoopController.setSetpoint(
-        topSetpointRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+        setpointRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     m_bottomClosedLoopController.setSetpoint(
-        bottomSetpointRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
-
-    Logger.recordOutput("Kickdexer/TopSetpointRPM", topSetpointRPM);
-    Logger.recordOutput("Kickdexer/BottomSetpointRPM", bottomSetpointRPM);
+        setpointRPM, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
   }
 
-  public Command setVelocitySetpointsCommand(double topSetpointRPM, double bottomSetpointRPM) {
-    return this.runOnce(() -> setVelocitySetpoints(topSetpointRPM, bottomSetpointRPM));
+  public Command setVelocitySetpointsCommand(double setpoint) {
+    return this.runEnd(() -> setVelocitySetpoints(setpoint), () -> setVelocitySetpoints(0));
   }
 
   // @Override

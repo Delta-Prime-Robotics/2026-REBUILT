@@ -64,6 +64,7 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
+    // ARM POSE
     public static final double kArmStowPosition = 0.1;
     public static final double kArmIntakePosition = 21.5;
     public static final double kArmThrustInwardPosition = 10;
@@ -71,10 +72,17 @@ public final class Constants {
     public static final double kArmMinAngle = 0.5;
     public static final double kArmMaxAngle = 21.7;
 
+    // Intake Speeds
     public static final double kIntakeSpeed = -0.5;
     public static final double kFeedingSpeed = -0.4;
     public static final double kOuttakeSpeed = 0.4;
     public static final double kStopSpeed = 0;
+
+    // Intake RPM Setpoints
+    public static final double kIntakeSetpoint = 2700;
+    public static final double kFeedingSetpoint = 1500;
+    public static final double kOuttakeSetpoint = -1700;
+    public static final double kStopSetpoint = 0;
 
     public enum IntakeState {
       INTAKING,

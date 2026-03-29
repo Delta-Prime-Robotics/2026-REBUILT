@@ -11,7 +11,7 @@
         "x": 5.068005025717033,
         "y": 5.505035571575368
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Start Top Bump Neutral"
     },
     {
@@ -40,7 +40,7 @@
         "y": 5.683735920310021
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "Shoot Top Bump"
     }
   ],
@@ -75,8 +75,8 @@
   "reversed": false,
   "folder": "To Alliance Zone",
   "idealStartingState": {
-    "velocity": 1.5,
-    "rotation": 0.0
+    "velocity": 2.0,
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

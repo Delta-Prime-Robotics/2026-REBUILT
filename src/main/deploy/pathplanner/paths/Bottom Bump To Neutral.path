@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4465000000000003,
-        "y": 2.1348333333333325
+        "x": 3.4507549857549855,
+        "y": 2.0711253561253566
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.030592280868602,
-        "y": 2.555417958472023
+        "x": 4.034847266623586,
+        "y": 2.491709981264047
       },
       "isLocked": false,
       "linkedName": "Shoot Bottom Bump"
     },
     {
       "anchor": {
-        "x": 6.184688888888888,
-        "y": 2.5733333333333324
+        "x": 6.8358547008547,
+        "y": 0.9083048433048442
       },
       "prevControl": {
-        "x": 4.408013206024952,
-        "y": 2.567824536639057
+        "x": 5.059179017990764,
+        "y": 0.9027960466105689
       },
       "nextControl": null,
       "isLocked": true,
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 1.5,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "To Neutral Zone",

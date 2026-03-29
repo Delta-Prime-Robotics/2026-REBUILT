@@ -3,29 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4562444444444447,
-        "y": 5.818233333333333
+        "x": 1.8615669515669517,
+        "y": 4.047920227920229
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.706094593831443,
-        "y": 5.809578689996098
+        "x": 1.7868955999508473,
+        "y": 5.07257015000074
       },
       "isLocked": false,
-      "linkedName": "Shoot Top Bump"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.495,
+        "x": 1.6419230769230766,
+        "y": 5.727549857549858
+      },
+      "prevControl": {
+        "x": 2.0372355838036103,
+        "y": 5.575157021696064
+      },
+      "nextControl": {
+        "x": 0.9285314034329907,
+        "y": 6.002562103065511
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.6341452991452998,
         "y": 5.969329529243937
       },
       "prevControl": {
-        "x": 0.8050854700854698,
-        "y": 5.947193732193732
+        "x": 0.3844612343106101,
+        "y": 5.981894073311528
       },
       "nextControl": {
-        "x": 0.13347701318398625,
-        "y": 5.995137250782574
+        "x": 0.8838293639799896,
+        "y": 5.956764985176346
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +52,8 @@
         "y": 5.969329529243937
       },
       "prevControl": {
-        "x": 1.6490307513871243,
-        "y": 5.985771891744698
+        "x": 1.6495603928700884,
+        "y": 5.971742701589784
       },
       "nextControl": null,
       "isLocked": true,
@@ -46,17 +62,17 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5373134328358223,
+      "waypointRelativePos": 0.5241903238704554,
       "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
       "name": "Slow to Intake",
-      "minWaypointRelativePos": 0.7188983855650495,
-      "maxWaypointRelativePos": 1.14,
+      "minWaypointRelativePos": 1.0213675213675222,
+      "maxWaypointRelativePos": 2.15,
       "constraints": {
-        "maxVelocity": 0.25,
+        "maxVelocity": 0.5,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -66,7 +82,19 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeDown",
+      "waypointRelativePos": 0.3490028490028482,
+      "endWaypointRelativePos": 2.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeDown"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -83,7 +111,7 @@
   "folder": "In Alliance Zone",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -59.99999999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

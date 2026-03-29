@@ -5,21 +5,72 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Bottom Trench To Neutral"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Shoot Bottom Trench"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "WindUpShooter"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 4.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "AutoShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FeedShooter"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Steal Bottom Corner"
+            "pathName": "Bottom Trench Shoot To Neutral"
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "StowIntake"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Steal Bottom Corner"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake Fuel"
+                }
+              }
+            ]
           }
         },
         {
@@ -29,7 +80,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Bottom Bump From Steal To Bottom Shoot"
+                  "pathName": "Bottom Steal to Bottom Shoot"
                 }
               },
               {
