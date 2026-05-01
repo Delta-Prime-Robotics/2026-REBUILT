@@ -201,8 +201,8 @@ public class RobotContainer {
 
     operatorController.b().whileTrue(kickdexer.runKickdexerBackwardCommand());
 
-    operatorController.a().whileTrue(kickdexer.runKickdexerForwardCommand())
-    .alongWith(beltNado.runMotorCommand(0.75));
+    operatorController.a().whileTrue(kickdexer.runKickdexerForwardCommand()
+    .alongWith(beltNado.runMotorCommand(0.75)));
 
     operatorController.y().whileTrue(beltNado.runMotorCommand(-0.75));
 
