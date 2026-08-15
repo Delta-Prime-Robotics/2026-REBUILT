@@ -208,13 +208,13 @@ public class RobotContainer {
 
     operatorController.y().whileTrue(beltNado.runMotorCommand(0.75));
     // Comp Shooter
-    // operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
-    // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
+    operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
 
-    // parade Shooter
-    operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(1000));
-    operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(2350));
-    // operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
+    // // parade Shooter
+    // operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(1000));
+    // operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(2350));
+
     operatorController
         .leftTrigger()
         .onTrue(
