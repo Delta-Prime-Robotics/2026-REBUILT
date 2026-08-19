@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file
 // at the root directory of this project.
 
-package frc.robot;
+package frc.robot.constants;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -21,10 +21,8 @@ public final class Constants {
   public static enum Mode {
     /** Running on a real robot. */
     REAL,
-
     /** Running a physics simulator. */
     SIM,
-
     /** Replaying from a log file. */
     REPLAY
   }
@@ -50,12 +48,47 @@ public final class Constants {
 
     // Intake
     public static final int kIntakeId = 10;
+    public static final int kLeftArmId = 11;
+    public static final int kRightArmId = 12;
+
+    // Belt Conveyor
+    public static final int kBeltnadoMotorId = 13;
+
+    // Kicker / Indexer
+    public static final int kKickdexerBottomMotorId = 14;
+    public static final int kKickdexerTopMotorId = 15;
 
     // Shooter
-    public static final int kShooterLeaderId = 11;
-    public static final int kShooterFollowerId = 12;
+    public static final int kShooterLeaderMotorId = 16;
+    // public static final int kShooterFollowerMotorId = 16;
+  }
 
-    // Indexer
-    public static final int kIndexerId = 13;
+  public static final class IntakeConstants {
+    // ARM POSE
+    public static final double kArmStowPosition = 0.1;
+    public static final double kArmIntakePosition = 21.5;
+    public static final double kArmThrustInwardPosition = 10;
+    public static final double kArmThrustOutwardPosition = 15;
+    public static final double kArmMinAngle = 0.5;
+    public static final double kArmMaxAngle = 21.7;
+
+    // Intake Speeds
+    public static final double kIntakeSpeed = -0.5;
+    public static final double kFeedingSpeed = -0.4;
+    public static final double kOuttakeSpeed = 0.4;
+    public static final double kStopSpeed = 0;
+
+    // Intake RPM Setpoints
+    public static final double kIntakeSetpoint = 2700;
+    public static final double kFeedingSetpoint = 1500;
+    public static final double kOuttakeSetpoint = -1700;
+    public static final double kStopSetpoint = 0;
+
+    public enum IntakeState {
+      INTAKING,
+      OUTTAKING,
+      STOWED,
+      THRUSTING
+    }
   }
 }

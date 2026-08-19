@@ -9,17 +9,28 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.IntakeConstants;
+import frc.robot.constants.Constants.IntakeConstants.IntakeState;
+import frc.robot.constants.FieldConstants;
+import frc.robot.subsystems.BeltNado;
+import frc.robot.subsystems.FlywheelShooter;
+import frc.robot.subsystems.Haptics;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeArms;
+import frc.robot.subsystems.Kickdexer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONavX;
@@ -43,12 +54,23 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final FlywheelShooter flywheelShooter = new FlywheelShooter();
+  private final Kickdexer kickdexer = new Kickdexer();
+  private final BeltNado beltNado = new BeltNado();
+  private final Intake intake = new Intake();
+  private final IntakeArms intakeArms = new IntakeArms();
+  private final AutoCommands autoCommands = new AutoCommands(kickdexer, beltNado, flywheelShooter);
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(3);
+  private final CommandXboxController operatorController = new CommandXboxController(2);
+  private final CommandXboxController driverController = new CommandXboxController(3);
+
+  public final Haptics driverHaptics = new Haptics(driverController);
+  public final Haptics operatorHaptics = new Haptics(operatorController);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+  private static Field2d field;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -66,11 +88,7 @@ public class RobotContainer {
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0)
-                // 	,
-                // new VisionIOPhotonVision(
-                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1)
-                );
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
         break;
 
       case SIM:
@@ -82,15 +100,12 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
+
         vision =
             new Vision(
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
-                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-                // 	,
-                // new VisionIOPhotonVisionSim(
-                //     VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-                );
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
         break;
 
       default:
@@ -102,25 +117,32 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        vision =
-            new Vision(
-                drive::addVisionMeasurement, new VisionIO() {}
-                // , new VisionIO() {}
-                );
 
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         break;
     }
+
+    addNamedAutoCommands();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    setAutoCommands();
+    // addNamedAutoCommands();
+    // setAutoCommands();
 
     // uncomment to set drive characterization commands on auto chooser
     // setDriveCharacterizationCommands();
 
     // Configure the button bindings
     configureButtonBindings();
+
+    field = new Field2d();
+    SmartDashboard.putData("Field", field);
+    FieldConstants.plotZones();
+  }
+
+  public static Field2d getField() {
+    return field;
   }
 
   /**
@@ -134,39 +156,38 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -driverController.getLeftY(),
+            () -> -driverController.getLeftX(),
+            () -> -driverController.getRightX()));
 
-    // Lock to 45° when A button is held
+    // Lock to 45° when B button is held
     // to go over bumps
-    controller
+    driverController
         .b()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -driverController.getLeftY(),
+                () -> -driverController.getLeftX(),
                 () -> Rotation2d.fromDegrees(45)));
 
     // Aim at hub when A button is held
-    controller
+    driverController
         .a()
         .whileTrue(
             DriveCommands.aimAtHubWhileDriving(
-                drive,
-                () -> -controller.getLeftY(),
-                () ->
-                    -controller.getLeftX())); // to-do, maybe create constant for these field coords
+                drive, () -> -driverController.getLeftY(), () -> -driverController.getLeftX()));
+    // to-do, maybe create constant for these field coords
     // I also saw another team that was houseing these coords in a separate file
     // that way only one boolean to flip the allience was needed for all coords
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driverController.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
+    driverController
         .povDown()
+        .multiPress(2, 2)
         .onTrue(
             Commands.runOnce(
                     () ->
@@ -174,10 +195,87 @@ public class RobotContainer {
                             new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
                     drive)
                 .ignoringDisable(true));
+
+    // Operator controls
+    intakeArms.setDefaultCommand(intakeArms.stopArmCommand());
+
+    operatorController.b().whileTrue(kickdexer.runKickdexerBackwardCommand());
+
+    operatorController
+        .a()
+        .whileTrue(
+            kickdexer.runKickdexerForwardCommand().alongWith(beltNado.runMotorCommand(-0.75)));
+
+    operatorController.y().whileTrue(beltNado.runMotorCommand(0.75));
+    // Comp Shooter
+    operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(3100));
+    operatorController.rightTrigger().whileTrue(flywheelShooter.autoShootRange());
+
+    // // parade Shooter
+    // operatorController.rightBumper().whileTrue(flywheelShooter.runAtRPMSCommand(1000));
+    // operatorController.rightTrigger().whileTrue(flywheelShooter.runAtRPMSCommand(2350));
+
+    operatorController
+        .leftTrigger()
+        .onTrue(
+            intakeArms
+                .runArmToIntakeStateCommand(IntakeState.INTAKING)
+                .alongWith(intake.runIntakeAtRPMCommand(IntakeConstants.kIntakeSetpoint)))
+        .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+
+    operatorController
+        .povDown()
+        .onTrue(
+            intakeArms
+                .runArmToIntakeStateCommand(IntakeState.OUTTAKING)
+                .alongWith(intake.runIntakeAtRPMCommand(IntakeConstants.kOuttakeSetpoint))
+                .alongWith(beltNado.runMotorCommand(-0.5)))
+        .onFalse(intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED));
+
+    operatorController
+        .rightStick()
+        .and(operatorController.povUp())
+        .whileTrue(intakeArms.runArmWithSpeedsCommand(0.2));
+    operatorController
+        .rightStick()
+        .and(operatorController.povDown())
+        .whileTrue(intakeArms.runArmWithSpeedsCommand(-0.2));
+    operatorController
+        .rightStick()
+        .and(operatorController.povRight())
+        .onTrue(intakeArms.zeroArmPoseCommand());
+
+    // operatorController
+    //     .povDown()
+    //     .onTrue(intakeArms.runArmToAngleCommand(IntakeConstants.kArmStowPosition));
+    // operatorController.leftTrigger().whileTrue(intake.runArmToIntakeState(IntakeState.INTAKING));
+    // // .onFalse(intake.runArmToIntakeState(IntakeState.STOWED));
+
+    // flywheelShooter.setDefaultCommand(flywheelShooter.idleShooterCommand());
+
   }
 
   public void setAutoCommands() {
     autoChooser.addDefaultOption("Do Nothing", Commands.none());
+  }
+
+  public void addNamedAutoCommands() {
+    NamedCommands.registerCommand("FeedShooter", autoCommands.feedShooter());
+    NamedCommands.registerCommand("Shoot", autoCommands.shoot4FtCommand());
+    NamedCommands.registerCommand("AutoShoot", flywheelShooter.autoShootRange());
+    // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming));
+    NamedCommands.registerCommand("WindUpShooter", flywheelShooter.windUpShooterCommand());
+    NamedCommands.registerCommand(
+        "WindUpShooterWithTimeout", autoCommands.windUpShooter().withTimeout(1));
+    NamedCommands.registerCommand(
+        "IntakeDown", intakeArms.runArmToIntakeStateCommand(IntakeState.INTAKING));
+    NamedCommands.registerCommand(
+        "Intake Fuel",
+        intake.runIntakeAtRPMCommandWithoutStopping(IntakeConstants.kIntakeSetpoint));
+    NamedCommands.registerCommand(
+        "StowIntake", intakeArms.runArmToIntakeStateCommand(IntakeState.STOWED).withTimeout(2));
+    // .deadlineFor(intake.runIntakeAtSpeedCommand(IntakeConstants.kIntakeSpeed))
+    // .finallyDo(() -> intake.stopIntake()));
   }
 
   public void setDriveCharacterizationCommands() {

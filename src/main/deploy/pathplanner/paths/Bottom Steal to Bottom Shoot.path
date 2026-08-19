@@ -1,0 +1,99 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.8358547008547,
+        "y": 0.9083048433048442
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.886001508528564,
+        "y": 0.7190549028993711
+      },
+      "isLocked": false,
+      "linkedName": "End Bottom Bump Neutral"
+    },
+    {
+      "anchor": {
+        "x": 4.962421652421653,
+        "y": 0.6369800569800577
+      },
+      "prevControl": {
+        "x": 5.583491152860226,
+        "y": 0.6476800566414035
+      },
+      "nextControl": {
+        "x": 4.320860779318238,
+        "y": 0.6259270248796378
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.205270655270655,
+        "y": 0.9083048433048442
+      },
+      "prevControl": {
+        "x": 4.019245014245014,
+        "y": 0.4819373219373233
+      },
+      "nextControl": {
+        "x": 2.900605600797046,
+        "y": 1.067891300410068
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.9210256410256403,
+        "y": 1.8514814814814828
+      },
+      "prevControl": {
+        "x": 2.8670211956180687,
+        "y": 2.1692806398082993
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8516593362654935,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.7764894042383068,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.6593362654938026,
+      "rotationDegrees": 58.95000000000001
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 58.95000000000001
+  },
+  "reversed": false,
+  "folder": "To Alliance Zone",
+  "idealStartingState": {
+    "velocity": 2.0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

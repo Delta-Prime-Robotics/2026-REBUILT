@@ -34,8 +34,8 @@ import java.util.function.Supplier;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
-  private static final double ANGLE_KP = 5.0;
-  private static final double ANGLE_KD = 0.4;
+  private static final double ANGLE_KP = 2.9;
+  private static final double ANGLE_KD = 0.0;
   private static final double ANGLE_MAX_VELOCITY = 8.0;
   private static final double ANGLE_MAX_ACCELERATION = 20.0;
   private static final double FF_START_DELAY = 2.0; // Secs
@@ -232,22 +232,13 @@ public class DriveCommands {
   }
 
   public static Command aimAtHubWhileDriving(
-      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
-    Supplier<Pose2d> hubPose =
-        () -> {
-          boolean isFlipped =
-              DriverStation.getAlliance().isPresent()
-                  && DriverStation.getAlliance().get() == Alliance.Red;
-          return isFlipped
-              // Red Hub center field coords
-              ? new Pose2d(
-                  Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Rotation2d.kZero)
-              // Blue Hub center field coords
-              : new Pose2d(
-                  Units.inchesToMeters(181.56), Units.inchesToMeters(158.32), Rotation2d.kZero);
-        };
-
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Supplier<Pose2d> hubPose) {
     return joystickDriveWithAimingAtPoint(drive, xSupplier, ySupplier, hubPose);
+  }
+
+  public static Command aimAtHubWhileDriving(
+      Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    return joystickDriveAtAngle(drive, xSupplier, ySupplier, () -> Drive.getAngleToHub());
   }
 
   /**

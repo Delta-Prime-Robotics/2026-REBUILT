@@ -1,0 +1,82 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.184688888888888,
+        "y": 5.486922222222222
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.068005025717033,
+        "y": 5.505035571575368
+      },
+      "isLocked": true,
+      "linkedName": "Start Top Bump Neutral"
+    },
+    {
+      "anchor": {
+        "x": 4.645066666666667,
+        "y": 5.399222222222222
+      },
+      "prevControl": {
+        "x": 4.88895842455447,
+        "y": 5.344296723276859
+      },
+      "nextControl": {
+        "x": 4.224935038140677,
+        "y": 5.493837716896436
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.4562444444444447,
+        "y": 5.818233333333333
+      },
+      "prevControl": {
+        "x": 3.830003794377538,
+        "y": 5.683735920310021
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Shoot Top Bump"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "StowIntake",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 2.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StowIntake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "To Alliance Zone",
+  "idealStartingState": {
+    "velocity": 2.0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

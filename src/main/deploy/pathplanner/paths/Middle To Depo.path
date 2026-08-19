@@ -1,0 +1,117 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.8615669515669517,
+        "y": 4.047920227920229
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.7868955999508473,
+        "y": 5.07257015000074
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.6419230769230766,
+        "y": 5.727549857549858
+      },
+      "prevControl": {
+        "x": 2.0372355838036103,
+        "y": 5.575157021696064
+      },
+      "nextControl": {
+        "x": 0.9285314034329907,
+        "y": 6.002562103065511
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.6341452991452998,
+        "y": 5.969329529243937
+      },
+      "prevControl": {
+        "x": 0.3844612343106101,
+        "y": 5.981894073311528
+      },
+      "nextControl": {
+        "x": 0.8838293639799896,
+        "y": 5.956764985176346
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3995720399429386,
+        "y": 5.969329529243937
+      },
+      "prevControl": {
+        "x": 1.6495603928700884,
+        "y": 5.971742701589784
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "End Depo"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5241903238704554,
+      "rotationDegrees": 180.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Slow to Intake",
+      "minWaypointRelativePos": 1.0213675213675222,
+      "maxWaypointRelativePos": 2.15,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "IntakeDown",
+      "waypointRelativePos": 0.3490028490028482,
+      "endWaypointRelativePos": 2.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "IntakeDown"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "In Alliance Zone",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

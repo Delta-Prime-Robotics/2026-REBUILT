@@ -23,6 +23,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -30,6 +31,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -37,10 +39,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
-import frc.robot.Constants.Mode;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.Mode;
 import frc.robot.util.LocalADStarAK;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -66,6 +67,7 @@ public class Drive extends SubsystemBase {
       };
   private SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, Pose2d.kZero);
+  private static Pose2d latestPose = Pose2d.kZero;
 
   public Drive(
       GyroIO gyroIO,
@@ -173,6 +175,8 @@ public class Drive extends SubsystemBase {
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
+
+    latestPose = poseEstimator.getEstimatedPosition();
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
@@ -288,6 +292,7 @@ public class Drive extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  @AutoLogOutput(key = "Odometry/Rotation")
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
@@ -296,6 +301,7 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    latestPose = pose;
   }
 
   /** Adds a new timestamped vision measurement. */
@@ -305,6 +311,35 @@ public class Drive extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  public static Pose2d getHubPose() {
+    boolean isFlipped =
+        DriverStation.getAlliance().isPresent()
+            && DriverStation.getAlliance().get() == Alliance.Red;
+    return isFlipped
+        // Red Hub center field coords
+        ? new Pose2d(Units.inchesToMeters(468.56), Units.inchesToMeters(158.32), Rotation2d.kZero)
+        // Blue Hub center field coords
+        : new Pose2d(Units.inchesToMeters(181.56), Units.inchesToMeters(158.32), Rotation2d.kZero);
+  }
+
+  @AutoLogOutput(key = "Drive/AngleToHub")
+  public static Rotation2d getAngleToHub() {
+    Pose2d target = getHubPose();
+    Pose2d robotPose = latestPose;
+    Translation2d delta = target.getTranslation().minus(robotPose.getTranslation());
+    double angle = Math.atan2(delta.getY(), delta.getX());
+    // To flip angle 180 degrees
+    // angle += Math.PI;
+    return new Rotation2d(angle);
+  }
+
+  @AutoLogOutput(key = "Drive/DistanceToHubMeters")
+  public static double getDistanceToHubMeters() {
+    Pose2d target = getHubPose();
+    Pose2d robotPose = latestPose;
+    return target.getTranslation().getDistance(robotPose.getTranslation());
   }
 
   /** Returns the maximum linear speed in meters per sec. */

@@ -1,0 +1,89 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.8358547008547,
+        "y": 0.9083048433048442
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.931733002379501,
+        "y": 2.379440694455976
+      },
+      "isLocked": false,
+      "linkedName": "End Bottom Bump Neutral"
+    },
+    {
+      "anchor": {
+        "x": 6.184688888888888,
+        "y": 5.486922222222222
+      },
+      "prevControl": {
+        "x": 6.1944333333333335,
+        "y": 3.908322222222222
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Start Top Bump Neutral"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.15,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 0.9186721991701198,
+      "rotationDegrees": 90.7076367363771
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.10024813895782003,
+      "maxWaypointRelativePos": 0.9320099255583123,
+      "constraints": {
+        "maxVelocity": 1.25,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake Fuel",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": 1.0,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Intake Fuel"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "In Neutral Zone",
+  "idealStartingState": {
+    "velocity": 1.0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
